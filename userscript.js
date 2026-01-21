@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         多模型同时回答 & 目录导航
+// @name         多模型同时回答 & 目录导航 - 美化版
 // @namespace    http://tampermonkey.net/
 // @version      5.2.0
 // @description  一键自动同时在各家大模型官网提问，免去复制粘贴的麻烦；提供历次提问、回答细节的目录导航，方便快速定位。支持范围：DS，Kimi，千问，豆包，元宝，ChatGPT，Gemini，Claude，Grok 等
@@ -338,7 +338,7 @@
     const TOP_LEVEL_GROUP_ID_COUNTER = "topLevelGroupIdCounter"; // 一级分组ID计数器（从1000开始）
     const BOOKMARK_QUESTION_MAX_LENGTH = 150; // 书签question最大长度
     // 书签按钮公共样式（不包含 bottom 和 background）
-    const BOOKMARK_BTN_BASE_STYLE = "position:fixed;right:0;color:white;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;border-radius:6px 0 0 6px;box-shadow:-2px 2px 8px rgba(0,0,0,0.2);user-select:none;padding:3px 5px";
+    const BOOKMARK_BTN_BASE_STYLE = "position:fixed;right:0;color:white;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;border-radius:12px 0 0 12px;box-shadow:-4px 4px 16px rgba(0,0,0,0.15);user-select:none;padding:8px 12px;transition:all 0.3s ease;backdrop-filter: blur(10px);";
 
     let userid = getGV("userid");
     if(isEmpty(userid)){
@@ -1188,10 +1188,10 @@
     /**
      * 输入框的显示/隐藏切换功能
      */
-    // 切换按钮相关常量
-    const TOGGLE_BUTTON_BG_SHOW = '#ec7258';
-    const TOGGLE_BUTTON_BG_HIDE = '#999';
-    const TOGGLE_BUTTON_STYLE = `font-size:14px;padding:5px;cursor:pointer;background:${TOGGLE_BUTTON_BG_SHOW};color:white;border:1px solid #ddd;border-radius:30%;box-shadow:0 4px 12px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;`;
+    // 更新切换按钮相关常量
+    const TOGGLE_BUTTON_BG_SHOW = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    const TOGGLE_BUTTON_BG_HIDE = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+    const TOGGLE_BUTTON_STYLE = `font-size:14px;padding:8px;cursor:pointer;background:${TOGGLE_BUTTON_BG_SHOW};color:white;border:1px solid #e1e5e9;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;transition:all 0.2s ease;`;
     const SYNC_SWITCH_TITLE = '同步提问开关';
 
     // 切换状态配置
@@ -1641,54 +1641,54 @@
 
         return {
             // 主目录样式
-            navBar: `position:fixed;visibility:hidden;top:${navTop};right:15px;max-width:${navMaxWidth};min-width:150px;background:rgba(255,255,255,0.95);border:1px solid #ccc;border-radius:6px;padding:0 5px;z-index:99999;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.15);max-height:90vh;overflow-y:auto;box-sizing:border-box;`,
-            miniButton: `position:fixed;top:${navTop};right:15px;color:${NAV_ITEM_COLOR};border:1px solid #ddd;border-radius:8px;padding:2px 8px;font-size:14px;font-weight: bold;cursor:pointer;z-index:99999;visibility:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.15);user-select:none;`,
-            title: `display:flex;align-items:center;justify-content:flex-start;gap:6px;font-weight:bold;color:#333;padding:4px 5px;border-bottom:1px solid #eaeaea;margin-bottom:4px;position:sticky;top:0;background:rgba(255,255,255,0.95);z-index:10;`,
-            hideBtn: `font-weight:normal;color:#333;font-size:12px;padding:2px 6px;border:1px solid #aaa;border-radius:10px;cursor:pointer;user-select:none;`,
-            countText: `font-weight:normal;color:#333;font-size:14px;margin-left:6px;user-select:none;`,
-            linkContainer: `display:flex;align-items:center;gap:4px;width:100%;`,
-            link: `width:100%;padding:4px 2px;cursor:pointer;color:#333;font-size:14px;line-height:1.5;white-space:normal;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word;max-height:calc(1.9em * 2);box-sizing:border-box;`,
-            waveIcon: `font-size:12px;cursor:pointer;color:#333;padding:0;border-radius:3px;user-select:none;flex-shrink:0;transition:background-color 0.2s;`,
-            waveIconHover: `background-color:#f0f0f0;color:#0066cc;`,
-            waveIconNormal: `background-color:transparent;color:#333;`,
+            navBar: `position:fixed;visibility:hidden;top:${navTop};right:15px;max-width:${navMaxWidth};min-width:150px;background:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);border:1px solid #e1e5e9;border-radius:12px;padding:0 8px;z-index:99999;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.12);max-height:90vh;overflow-y:auto;box-sizing:border-box;backdrop-filter: blur(10px);margin:0;`,
+            miniButton: `position:fixed;top:${navTop};right:15px;color:${NAV_ITEM_COLOR};border:1px solid #e1e5e9;border-radius:10px;padding:4px 10px;font-size:14px;font-weight: 600;cursor:pointer;z-index:99999;visibility:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.15);user-select:none;background:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);`,
+            title: `display:flex;align-items:center;justify-content:flex-start;gap:8px;font-weight:600;color:#2d3748;padding:6px 8px;border-bottom:1px solid #eaeef2;margin-bottom:6px;position:sticky;top:30px;background:rgba(255,255,255,0.95);z-index:10;border-radius:8px 8px 0 0;`,
+            hideBtn: `font-weight:500;color:#4a5568;font-size:12px;padding:4px 8px;border:1px solid #cbd5e0;border-radius:12px;cursor:pointer;user-select:none;transition:all 0.2s ease;`,
+            countText: `font-weight:500;color:#4a5568;font-size:14px;margin-left:8px;user-select:none;`,
+            linkContainer: `display:flex;align-items:center;gap:6px;width:100%;`,
+            link: `width:100%;padding:6px 4px;cursor:pointer;color:#2d3748;font-size:14px;line-height:1.5;white-space:normal;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word;max-height:calc(1.9em * 2);box-sizing:border-box;border-radius:6px;transition:all 0.2s ease;`,
+            waveIcon: `font-size:14px;cursor:pointer;color:#4a5568;padding:0;border-radius:4px;user-select:none;flex-shrink:0;transition:background-color 0.2s;`,
+            waveIconHover: `background-color:#e2e8f0;color:#2b6cb0;`,
+            waveIconNormal: `background-color:transparent;color:#4a5568;`,
 
             // 副目录样式
-            subNavBar: `position:fixed;left:${SUB_NAV_LEFT};top:${subNavTop};max-width:${subNavMaxWidth};min-width:${subNavMinWidth};max-height:${subNavMaxHeight};background:rgba(255,255,255,1);border:1px solid #ccc;border-radius:6px;padding:0 8px;z-index:2147483646;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.15);overflow-y:auto;box-sizing:border-box;display:none;`,
-            subNavTitle: `font-weight:bold;color:#111;padding:4px 0;border-bottom:1px solid #eaeaea;margin-bottom:6px;font-size:14px;`,
-            subNavCloseBtn: `position:absolute;top:0;right:5px;font-size:18px;cursor:pointer;color:#333;width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:3px;transition:background-color 0.2s;`,
+            subNavBar: `position:fixed;left:${SUB_NAV_LEFT};top:${subNavTop};max-width:${subNavMaxWidth};min-width:${subNavMinWidth};max-height:${subNavMaxHeight};background:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);border:1px solid #e1e5e9;border-radius:12px;padding:0 12px;z-index:2147483646;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.12);overflow-y:auto;box-sizing:border-box;display:none;backdrop-filter: blur(10px);`,
+            subNavTitle: `font-weight:600;color:#1a202c;padding:6px 0;border-bottom:1px solid #eaeef2;margin-bottom:8px;font-size:14px;`,
+            subNavCloseBtn: `position:absolute;top:2px;right:8px;font-size:20px;cursor:pointer;color:#4a5568;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:background-color 0.2s;`,
 
-            subNavItem: `padding:4px 2px;cursor:pointer;color:#333;font-size:13px;line-height:1.6;border-radius:3px;margin:2px 0;transition:background-color 0.2s;word-break:break-word;`,
+            subNavItem: `padding:6px 4px;cursor:pointer;color:#2d3748;font-size:13px;line-height:1.6;border-radius:6px;margin:3px 0;transition:all 0.2s ease;word-break:break-word;`,
             subNavItemH1: `padding-left:0px;font-weight:700;`,
-            subNavItemH2: `padding-left:2px;font-weight:600;`,
-            subNavItemH3: `padding-left:8px;font-weight:500;`,
-            subNavItemH4: `padding-left:14px;font-weight:400;`,
+            subNavItemH2: `padding-left:4px;font-weight:600;`,
+            subNavItemH3: `padding-left:12px;font-weight:500;`,
+            subNavItemH4: `padding-left:20px;font-weight:400;`,
 
-            levelBtnGroup: `display:flex;gap:4px;align-items:center;`,
-            levelBtn: `padding:2px 4px;font-size:11px;cursor:pointer;border:1px solid #ddd;border-radius:4px;background:#fff;color:#333;transition:all 0.2s;user-select:none;`,
-            levelBtnActive: `background:#3498db;color:#fff;border-color:#3498db;`,
-            levelBtnHover: `background-color:#f0f0f0;border-color:#ccc;`,
-            levelBtnLeave: `background-color:#fff;border-color:#ddd;color:#333;`,
+            levelBtnGroup: `display:flex;gap:6px;align-items:center;`,
+            levelBtn: `padding:4px 6px;font-size:12px;cursor:pointer;border:1px solid #e2e8f0;border-radius:6px;background:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);color:#4a5568;transition:all 0.2s;user-select:none;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
+            levelBtnActive: `font-weight:500;color:#4a5568;font-size:12px;padding:4px 8px;border:1px solid #cbd5e0;border-radius:12px;cursor:pointer;user-select:none;transition:all 0.2s ease;`,
+            levelBtnHover: `background-color:#e2e8f0;border-color:#cbd5e0;`,
+            levelBtnLeave: `background-color:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);border-color:#e2e8f0;color:#4a5568;`,
 
-            subNavMaxWidthBtn: `position:absolute;top:0;right:${SUB_POS_RIGHT};font-size:12px;margin:0 3px;padding:0 4px;cursor:pointer;color:#111;height:20px;display:flex;align-items:center;justify-content:center;border:1px solid #ccc;border-radius:3px;transition:background-color 0.2s;`,
-            subNavMaxWidthBtnHover: `background-color:#f0f0f0;`,
+            subNavMaxWidthBtn: `position:absolute;top:2px;right:${SUB_POS_RIGHT};font-size:13px;margin:0 4px;padding:0 6px;cursor:pointer;color:#2d3748;height:24px;display:flex;align-items:center;justify-content:center;border:1px solid #e2e8f0;border-radius:6px;transition:background-color 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
+            subNavMaxWidthBtnHover: `background-color:#e2e8f0;`,
             subNavMaxWidthBtnNormal: `background-color:transparent;`,
-            subNavMaxWidthInput: `position:absolute;top:0;right:${SUB_POS_RIGHT};width:45px;height:20px;padding:0 4px;font-size:12px;border:1px solid #ccc;border-radius:3px;outline:none;`,
+            subNavMaxWidthInput: `position:absolute;top:2px;right:${SUB_POS_RIGHT};width:50px;height:24px;padding:0 6px;font-size:13px;border:1px solid #e2e8f0;border-radius:6px;outline:none;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
 
-            subNavPositionBtn: `position:absolute;top:0;right:${SUB_POS_RIGHT};font-size:12px;margin:0 3px;padding:0 4px;cursor:pointer;color:#111;height:20px;display:flex;align-items:center;justify-content:center;border:1px solid #ccc;border-radius:3px;transition:background-color 0.2s;`,
-            subNavPositionBtnHover: `background-color:#f0f0f0;`,
+            subNavPositionBtn: `position:absolute;top:2px;right:${SUB_POS_RIGHT};font-size:13px;margin:0 4px;padding:0 6px;cursor:pointer;color:#2d3748;height:24px;display:flex;align-items:center;justify-content:center;border:1px solid #e2e8f0;border-radius:6px;transition:background-color 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
+            subNavPositionBtnHover: `background-color:#e2e8f0;`,
             subNavPositionBtnNormal: `background-color:transparent;`,
-            subNavPositionInput: `position:absolute;top:0;right:${SUB_POS_RIGHT};width:45px;height:20px;padding:0 4px;font-size:12px;border:1px solid #ccc;border-radius:3px;outline:none;`,
+            subNavPositionInput: `position:absolute;top:2px;right:${SUB_POS_RIGHT};width:50px;height:24px;padding:0 6px;font-size:13px;border:1px solid #e2e8f0;border-radius:6px;outline:none;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
 
-            subNavAlignLeftBtn: `position:absolute;top:${SUB_ALIGN_LEFT_TOP};right:${SUB_POS_RIGHT};font-size:12px;padding:0 3px;margin:0 3px;cursor:pointer;color:#111;display:flex;align-items:center;justify-content:center;border:1px solid #ccc;border-radius:3px;transition:background-color 0.2s;`,
-            subNavAlignLeftBtnHover: `background-color:#f0f0f0;`,
-            subNavAlignLeftBtnActive: `background-color:${SUB_ALIGN_LEFT_ACTIVE_BG};`,
+            subNavAlignLeftBtn: `position:absolute;top:${SUB_ALIGN_LEFT_TOP};right:${SUB_POS_RIGHT};font-size:13px;padding:0 4px;margin:0 4px;cursor:pointer;color:#2d3748;display:flex;align-items:center;justify-content:center;border:1px solid #e2e8f0;border-radius:6px;transition:background-color 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
+            subNavAlignLeftBtnHover: `background-color:#e2e8f0;`,
+            subNavAlignLeftBtnActive: `background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:#fff;`,
             subNavAlignLeftBtnNormal: `background-color:transparent;`,
 
-            subNavAlignRightBtn: `position:absolute;top:${SUB_ALIGN_LEFT_TOP};right:${SUB_POS_RIGHT};font-size:12px;padding:0 3px;margin:0 3px;cursor:pointer;color:#111;display:flex;align-items:center;justify-content:center;border:1px solid #ccc;border-radius:3px;transition:background-color 0.2s;`,
-            subNavAlignRightBtnHover: `background-color:#f0f0f0;`,
-            subNavAlignRightBtnActive: `background-color:${SUB_ALIGN_RIGHT_ACTIVE_BG};`,
+            subNavAlignRightBtn: `position:absolute;top:${SUB_ALIGN_LEFT_TOP};right:${SUB_POS_RIGHT};font-size:13px;padding:0 4px;margin:0 4px;cursor:pointer;color:#2d3748;display:flex;align-items:center;justify-content:center;border:1px solid #e2e8f0;border-radius:6px;transition:background-color 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
+            subNavAlignRightBtnHover: `background-color:#e2e8f0;`,
+            subNavAlignRightBtnActive: `background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:#fff;`,
             subNavAlignRightBtnNormal: `background-color:transparent;`,
-            subNavButtonRow: `display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:4px;`
+            subNavButtonRow: `display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:6px;`
         };
     };
 
@@ -1698,7 +1698,82 @@
     // 创建导航元素
     const navBar = createTag('div', "", NAV_STYLES.navBar);
     navBar.id = "tool-nav-bar";
-
+    
+    // 添加拖拽功能到主目录栏
+    let isMainNavDragging = false;
+    let mainNavOffsetX, mainNavOffsetY;
+    
+    // 添加可拖拽的标题栏
+    const mainDragHandle = createTag('div', "", 'position:absolute;top:0;left:0;right:0;height:30px;cursor:move;background:transparent;z-index:999999;');
+    mainDragHandle.id = 'main-nav-drag-handle';
+    mainDragHandle.style.cssText += 'cursor:move;';
+    // 添加拖拽手柄的视觉提示
+    mainDragHandle.title = '拖拽此处移动主目录位置';
+    mainDragHandle.addEventListener('mousedown', (e) => {
+        if (e.target !== mainDragHandle && !mainDragHandle.contains(e.target)) {
+            return; // 只有点击在拖拽手柄上才开始拖拽
+        }
+        isMainNavDragging = true;
+        mainNavOffsetX = e.clientX - navBar.getBoundingClientRect().left;
+        mainNavOffsetY = e.clientY - navBar.getBoundingClientRect().top;
+        navBar.style.zIndex = '2147483647'; // 确保拖拽时在最顶层
+        e.preventDefault();
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+        if (!isMainNavDragging) return;
+        
+        const newX = e.clientX - mainNavOffsetX;
+        const newY = e.clientY - mainNavOffsetY;
+        
+        // 边界检查
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        const elementWidth = navBar.offsetWidth;
+        const elementHeight = navBar.offsetHeight;
+        
+        const boundedX = Math.max(0, Math.min(newX, windowWidth - elementWidth));
+        const boundedY = Math.max(0, Math.min(newY, windowHeight - elementHeight));
+        
+        navBar.style.left = `${boundedX}px`;
+        navBar.style.top = `${boundedY}px`;
+        // 重置 right 属性以避免冲突
+        navBar.style.right = 'auto';
+        navBar.style.margin = '0';
+    });
+    
+    document.addEventListener('mouseup', () => {
+        if (isMainNavDragging) {
+            isMainNavDragging = false;
+            // 拖拽结束后恢复原来的层级
+            navBar.style.zIndex = '99999';
+            // 保存当前位置到存储
+            const currentLeft = navBar.style.left;
+            const currentTop = navBar.style.top;
+            if (currentLeft && currentTop) {
+                // 使用新的存储键保存位置
+                const position = { left: currentLeft, top: currentTop };
+                setGV('mainNavPosition', position);
+                // 标记为已拖拽，避免与自动定位冲突
+                navBar.dataset.dragged = 'true';
+            }
+        }
+    });
+    
+    // 添加拖拽手柄到主目录栏
+    navBar.appendChild(mainDragHandle);
+    
+    // 检查并恢复之前保存的位置
+    const savedMainPosition = getGV('mainNavPosition');
+    if (savedMainPosition && savedMainPosition.left && savedMainPosition.top) {
+        navBar.style.left = savedMainPosition.left;
+        navBar.style.top = savedMainPosition.top;
+        navBar.style.right = 'auto';
+        navBar.style.margin = '0';
+        // 标记为已拖拽，避免与自动定位冲突
+        navBar.dataset.dragged = 'true';
+    }
+    
     const navMiniButton = createTag('div', '目录', NAV_STYLES.miniButton);
 
     // 更新导航栏样式的函数（当变量改变时调用）
@@ -1745,6 +1820,83 @@
     const subNavLeft = getSubNavLeft();
     const subNavBar = createTag('div', "", NAV_STYLES.subNavBar.replace(`left:${SUB_NAV_LEFT}`, `left:${subNavLeft}`));
     subNavBar.id = "tool-sub-nav-bar";
+    
+    // 添加拖拽功能到副目录栏
+    let isDragging = false;
+    let offsetX, offsetY;
+    
+    // 添加可拖拽的标题栏
+    const dragHandle = createTag('div', "", 'position:absolute;top:0;left:0;right:0;height:30px;cursor:move;background:transparent;z-index:999999;');
+    dragHandle.id = 'sub-nav-drag-handle';
+    dragHandle.style.cssText += 'cursor:move;';
+    // 添加拖拽手柄的视觉提示
+    dragHandle.title = '拖拽此处移动副目录位置';
+    // 为了调试目的，我们可以临时设置一个半透明背景来显示拖拽区域
+    // dragHandle.style.background = 'rgba(255, 0, 0, 0.2)'; // 调试用，实际使用时不需要
+    dragHandle.addEventListener('mousedown', (e) => {
+        if (e.target !== dragHandle && !dragHandle.contains(e.target)) {
+            return; // 只有点击在拖拽手柄上才开始拖拽
+        }
+        isDragging = true;
+        offsetX = e.clientX - subNavBar.getBoundingClientRect().left;
+        offsetY = e.clientY - subNavBar.getBoundingClientRect().top;
+        subNavBar.style.zIndex = '2147483647'; // 确保拖拽时在最顶层
+        e.preventDefault();
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        
+        const newX = e.clientX - offsetX;
+        const newY = e.clientY - offsetY;
+        
+        // 边界检查
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        const elementWidth = subNavBar.offsetWidth;
+        const elementHeight = subNavBar.offsetHeight;
+        
+        const boundedX = Math.max(0, Math.min(newX, windowWidth - elementWidth));
+        const boundedY = Math.max(0, Math.min(newY, windowHeight - elementHeight));
+        
+        subNavBar.style.left = `${boundedX}px`;
+        subNavBar.style.top = `${boundedY}px`;
+        // 重置 right 属性以避免冲突
+        subNavBar.style.right = 'auto';
+    });
+    
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            // 拖拽结束后恢复原来的层级
+            subNavBar.style.zIndex = '2147483646';
+            // 保存当前位置到存储
+            const currentLeft = subNavBar.style.left;
+            const currentTop = subNavBar.style.top;
+            if (currentLeft && currentTop) {
+                // 使用新的存储键保存位置
+                const position = { left: currentLeft, top: currentTop };
+                setGV('subNavPosition', position);
+                // 标记为已拖拽，避免与自动定位冲突
+                subNavBar.dataset.dragged = 'true';
+            }
+        }
+    });
+    
+    // 添加拖拽手柄到副目录栏
+    subNavBar.appendChild(dragHandle);
+    
+    // 检查并恢复之前保存的位置
+    const savedPosition = getGV('subNavPosition');
+    if (savedPosition && savedPosition.left && savedPosition.top) {
+        subNavBar.style.left = savedPosition.left;
+        subNavBar.style.top = savedPosition.top;
+        // 重置 right 属性以避免冲突
+        subNavBar.style.right = 'auto';
+        // 标记为已拖拽，避免与自动定位冲突
+        subNavBar.dataset.dragged = 'true';
+    }
+    
     const alignLeftValue = SUB_ALIGN_LEFT_VALUE;
     const alignRightValue = SUB_ALIGN_RIGHT_VALUE;
     let isSubNavAlignedLeft = subNavLeft === alignLeftValue;
@@ -1840,9 +1992,12 @@
         }
 
         // 如果条目数量超过指定阈值，则将navBar的top抬高
-        let navTop = linkCount > NAV_TOP_THRESHOLD ? getNavTopOverflow() : getNavTop();
-        navBar.style.top = navTop;
-        navMiniButton.style.top = navTop;
+        // 但只有在未被拖拽的情况下才更新top值
+        if (navBar.dataset.dragged !== 'true') {
+            let navTop = linkCount > NAV_TOP_THRESHOLD ? getNavTopOverflow() : getNavTop();
+            navBar.style.top = navTop;
+        }
+        navMiniButton.style.top = navBar.style.top;
 
         // 更新条数显示
         updateNavCount();
@@ -1862,6 +2017,25 @@
         navMinimized = min === true;
         setS(T + 'navMinimized', navMinimized.toString());
         refreshNavBarVisibility();
+        // 如果主目录被最小化，暂时清除拖拽标记，但在还原时需要重新应用位置
+        if (navMinimized) {
+            // 保存当前拖拽状态，以便在恢复时知道是否需要恢复位置
+            if (navBar.dataset.dragged === 'true') {
+                setGV('mainNavWasDragged', true);
+            }
+        } else {
+            // 恢复时，如果有保存的拖拽状态，则恢复位置
+            if (getGV('mainNavWasDragged') === true) {
+                navBar.dataset.dragged = 'true';
+                const savedMainPosition = getGV('mainNavPosition');
+                if (savedMainPosition && savedMainPosition.left && savedMainPosition.top) {
+                    navBar.style.left = savedMainPosition.left;
+                    navBar.style.top = savedMainPosition.top;
+                    navBar.style.right = 'auto';
+                    navBar.style.margin = '0';
+                }
+            }
+        }
     };
 
     // 计算当前应该高亮的导航项索引
@@ -2418,6 +2592,10 @@
 
     // 根据副目录条目数量动态设置top位置
     const updateSubNavTop = () => {
+        // 如果副目录栏被拖拽过，则不更新top位置
+        if (subNavBar.dataset.dragged === 'true') {
+            return;
+        }
         const subNavItemCount = subNavBar.querySelectorAll('.sub-nav-item').length;
         const topValue = subNavItemCount > SUB_NAV_TOP_THRESHOLD ? getSubNavTopOverflow() : getSubNavTop();
         subNavBar.style.top = topValue;
@@ -2794,11 +2972,17 @@
 
     // 渲染副目录UI
     const renderSubNavUI = (questionIndex, existingLevels) => {
-        // 清空副目录栏
+        // 清空副目录栏，但保留拖拽手柄
+        const dragHandle = subNavBar.querySelector('#sub-nav-drag-handle');
         subNavBar.replaceChildren();
+        
+        // 如果存在拖拽手柄，重新添加它
+        if (dragHandle) {
+            subNavBar.appendChild(dragHandle);
+        }
 
         // 创建标题容器（sticky定位，用于冻结顶栏）
-        const titleContainer = createTag('div', "", 'position:sticky;top:0;background:rgba(255,255,255,1);z-index:10;padding:5px 0;padding-bottom:6px;border-bottom:1px solid #eaeaea;');
+        const titleContainer = createTag('div', "", 'position:sticky;top:0;background:rgba(255,255,255,1);z-index:10;padding:5px 0;padding-bottom:6px;border-bottom:1px solid #eaeaea;margin-top:30px;');
         titleContainer.className = 'sub-nav-title-container';
         
         // 第一行：标题、层级按钮组、关闭按钮
@@ -2848,18 +3032,30 @@
         // 根据副目录条目数量动态设置top位置
         updateSubNavTop();
 
-        // 确保使用最新的left值（从localStorage读取）
-        const currentLeft = getSubNavLeft();
-        if (isSubNavAlignedRight) {
-            subNavBar.style.left = 'auto';
-            subNavBar.style.right = alignRightValue;
-        } else {
-            subNavBar.style.left = currentLeft;
-            subNavBar.style.right = 'auto';
+        // 确保使用最新的left值（从localStorage读取），但如果副目录栏被拖拽过，则保持拖拽位置
+        if (subNavBar.dataset.dragged !== 'true') {
+            const currentLeft = getSubNavLeft();
+            if (isSubNavAlignedRight) {
+                subNavBar.style.left = 'auto';
+                subNavBar.style.right = alignRightValue;
+            } else {
+                subNavBar.style.left = currentLeft;
+                subNavBar.style.right = 'auto';
+            }
         }
 
         // 显示副目录栏
         subNavBar.style.display = 'block';
+        
+        // 如果副目录栏之前被拖拽过，恢复其位置
+        if (subNavBar.dataset.dragged === 'true') {
+            const savedPosition = getGV('subNavPosition');
+            if (savedPosition && savedPosition.left && savedPosition.top) {
+                subNavBar.style.left = savedPosition.left;
+                subNavBar.style.top = savedPosition.top;
+                subNavBar.style.right = 'auto';
+            }
+        }
 
         // 启动轮询更新，每10秒检查一次是否需要更新副目录
         startSubNavObserver(questionIndex);
@@ -2969,6 +3165,8 @@
         currentSubNavQuestionIndex = -1;
         // 停止内容变化监听
         stopSubNavObserver();
+        // 清除拖拽标记，以便下次显示时使用默认位置
+        delete subNavBar.dataset.dragged;
     };
 
     // 根据问题索引自动显示对应的副目录
@@ -3336,7 +3534,15 @@
         // 对于 STUDIO 站点，保存旧链接中有实质内容的文本
         const preservedTexts = site === STUDIO ? preserveStudioNavTexts() : [];
 
+        // 清空主目录栏，但保留拖拽手柄
+        const mainDragHandle = navBar.querySelector('#main-nav-drag-handle');
         navBar.replaceChildren();
+        
+        // 如果存在拖拽手柄，重新添加它
+        if (mainDragHandle) {
+            navBar.appendChild(mainDragHandle);
+        }
+        
         navLinks = [];
         elToLink.clear();
         if(navIO) try { navIO.disconnect(); } catch(e) {}
@@ -3390,44 +3596,44 @@
      * ═══════════════════════════════════════════════════════════════════════
      ******************************************************************************/
 
-    // 面板样式集中定义
+    // 更新面板样式集中定义
     const PANEL_STYLES = {
         // 固定多选面板宽度（同时保留高度自适应）
-        panel: `z-index:100000;cursor:pointer;position:fixed;right:10px;bottom:110px;max-height:450px;width:calc(${PANEL_COLUMN_WIDTH} * 2 + 110px);background:white;border:1px solid #ddd;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.1);overflow-y:auto;padding:6px 4px;display:flex;flex-direction:column;align-items:flex-start;`,
+        panel: `z-index:100000;cursor:pointer;position:fixed;right:10px;bottom:110px;max-height:450px;width:calc(${PANEL_COLUMN_WIDTH} * 2 + 110px);background:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);border:1px solid #e1e5e9;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.12);overflow-y:auto;padding:12px 8px;display:flex;flex-direction:column;align-items:flex-start;backdrop-filter: blur(10px);`,
         panelCompact: `width:auto;padding-top:0px;padding-bottom:0px;`,
-        buttonContainer: `display:flex;align-items:center;gap:16px;width:calc(${PANEL_BUTTON_WIDTH} + ${PANEL_BUTTON_WIDTH} + ${PANEL_BUTTON_WIDTH} + ${PANEL_BUTTON_WIDTH} + 24px);margin-bottom:10px;margin-top:2px`,
-        buttonBase: `display:inline-flex;align-items:center;justify-content:center;text-align:center;color:white;border:none;border-radius:6px;padding:4px 6px;font-size:14px;cursor:pointer;width:${PANEL_BUTTON_WIDTH};height:36px;flex-shrink:0;`,
-        disable: `background:#ec7258;`,
-        settingsBtn: `background:#667eea;`,
-        newChatBtn: `background:#48bb78;`,
+        buttonContainer: `display:flex;align-items:center;gap:12px;width:calc(${PANEL_BUTTON_WIDTH} + ${PANEL_BUTTON_WIDTH} + ${PANEL_BUTTON_WIDTH} + ${PANEL_BUTTON_WIDTH} + 16px);margin-bottom:10px;margin-top:2px`,
+        buttonBase: `display:inline-flex;align-items:center;justify-content:center;text-align:center;color:white;border:none;border-radius:8px;padding:8px 12px;font-size:14px;cursor:pointer;width:${PANEL_BUTTON_WIDTH};height:40px;flex-shrink:0;transition:all 0.2s ease;box-shadow:0 2px 8px rgba(0,0,0,0.1);`,
+        disable: `background:linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);`,
+        settingsBtn: `background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);`,
+        newChatBtn: `background:linear-gradient(135deg, #48bb78 0%, #38a169 100%);`,
         // 全选、清空按钮尺寸更紧凑，且使用单独宽度，高度自适应
-        selectAllBtn: `background:#3498db;width:${PANEL_SMALL_BUTTON_WIDTH};padding:3px 6px;font-size:12px;height:auto;`,
-        clearBtn: `background:#95a5a6;width:${PANEL_SMALL_BUTTON_WIDTH};padding:3px 6px;font-size:12px;height:auto;`,
-        addCombinationBtn: `background:#48bb78;margin:6px 2px;height:auto;width:auto`,
+        selectAllBtn: `background:linear-gradient(135deg, #3498db 0%, #2980b9 100%);width:${PANEL_SMALL_BUTTON_WIDTH};padding:6px 8px;font-size:12px;height:auto;`,
+        clearBtn: `background:linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);width:${PANEL_SMALL_BUTTON_WIDTH};padding:6px 8px;font-size:12px;height:auto;`,
+        addCombinationBtn: `background:linear-gradient(135deg, #48bb78 0%, #38a169 100%);margin:8px 4px;height:auto;width:auto;box-shadow:0 2px 8px rgba(72, 187, 120, 0.3);`,
         // 组合按钮基础样式：宽度自适应，不使用固定 PANEL_BUTTON_WIDTH
-        combinationBtnBase: `text-align:center;color:white;border:none;border-radius:6px;padding:4px 6px;font-size:13px;cursor:pointer;width:auto;flex-shrink:1;`,
+        combinationBtnBase: `text-align:center;color:white;border:none;border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer;width:auto;flex-shrink:1;transition:all 0.2s ease;box-shadow:0 2px 8px rgba(0,0,0,0.1);`,
         // 组合按钮：宽度自适应，不使用固定 PANEL_BUTTON_WIDTH
-        combinationBtn: `background:transparent;border:1px solid #ddd;margin:2px;padding:4px 8px;font-size:12px;min-width:40px;white-space:nowrap;position:relative;`,
-        deleteBtn: `position:absolute;top:-6px;right:-6px;width:16px;height:16px;background:#ff4444;border-radius:50%;border:none;color:white;font-size:10px;line-height:1;cursor:pointer;display:none;z-index:10;padding:0;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,0.2);`,
-        combinationContainer: `display:flex;flex-wrap:wrap;gap:4px;width:100%;margin-top:4px;`,
-        item: `display:flex;align-items:center;padding:4px 0 4px 4px;border-bottom:1px solid #eee;`,
-        itemCompact: `display:flex;align-items:center;justify-content:center;padding:4px;`,
-        iconImg: `width:16px;height:16px;margin-right:6px;flex-shrink:0;vertical-align:middle;`,
-        iconImgCompact: `width:16px;height:16px;flex-shrink:0;vertical-align:middle;`,
-        iconImgCombination: `width:16px;height:16px;margin:0 2px;flex-shrink:0;vertical-align:middle;`,
-        wordSpan: `flex:1;margin-right:8px;font-size:14px;line-height:16px;display:flex;align-items:center;`,
-        wordSpanCompact: `font-size:14px;line-height:16px;display:flex;align-items:center;`,
-        checkbox: `margin-right:4px;font-size:18px;`,
-        emptyMessage: `padding:8px;text-align:center;color:#888;font-size:14px;`,
-        headline: `font-weight:bold;font-size:15px;margin-bottom:4px;`,
-        modelColumns: `display:flex;gap:25px;align-items:flex-start;`,
+        combinationBtn: `background:linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);border:1px solid #e1e5e9;margin:4px;padding:6px 12px;font-size:12px;min-width:40px;white-space:nowrap;position:relative;box-shadow:0 2px 8px rgba(0,0,0,0.1);`,
+        deleteBtn: `position:absolute;top:-8px;right:-8px;width:18px;height:18px;background:linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);border-radius:50%;border:none;color:white;font-size:10px;line-height:1;cursor:pointer;display:none;z-index:10;padding:0;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,0.2);`,
+        combinationContainer: `display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-top:6px;`,
+        item: `display:flex;align-items:center;padding:6px 0 6px 6px;border-bottom:1px solid #f0f2f5;`,
+        itemCompact: `display:flex;align-items:center;justify-content:center;padding:6px;`,
+        iconImg: `width:18px;height:18px;margin-right:8px;flex-shrink:0;vertical-align:middle;`,
+        iconImgCompact: `width:18px;height:18px;flex-shrink:0;vertical-align:middle;`,
+        iconImgCombination: `width:18px;height:18px;margin:0 3px;flex-shrink:0;vertical-align:middle;`,
+        wordSpan: `flex:1;margin-right:8px;font-size:14px;line-height:18px;display:flex;align-items:center;`,
+        wordSpanCompact: `font-size:14px;line-height:18px;display:flex;align-items:center;`,
+        checkbox: `margin-right:6px;font-size:18px;`,
+        emptyMessage: `padding:12px;text-align:center;color:#888;font-size:14px;`,
+        headline: `font-weight:600;font-size:16px;margin-bottom:6px;color:#2d3748;`,
+        modelColumns: `display:flex;gap:30px;align-items:flex-start;`,
         modelColumn: `width:${PANEL_COLUMN_WIDTH};flex-shrink:0;`,
-        modelListWithButtons: `display:flex;gap:12px;align-items:flex-start;width:100%;`,
-        selectClearContainerVertical: `display:flex;flex-direction:column;gap:6px;flex-shrink:0;`,
+        modelListWithButtons: `display:flex;gap:16px;align-items:flex-start;width:100%;`,
+        selectClearContainerVertical: `display:flex;flex-direction:column;gap:8px;flex-shrink:0;`,
         groupMenuWrapper: `position:relative;display:inline-block;`,
-        groupMenu: `display:none;flex-direction:column;gap:6px;position:fixed;min-width:60px;max-width:240px;max-height:260px;overflow:auto;background:#fff;border:1px solid #ddd;border-radius:6px;padding:6px;box-shadow:0 4px 12px rgba(0,0,0,0.12);z-index:10000;`,
-        groupMenuBtn: `background:#48bb78;color:#fff;border:none;border-radius:4px;padding:6px 8px;text-align:left;font-size:14px;cursor:pointer;white-space:nowrap;position:relative;`,
-        groupMenuEmpty: `padding:6px 4px;color:#666;font-size:14px;white-space:nowrap;`
+        groupMenu: `display:none;flex-direction:column;gap:8px;position:fixed;min-width:60px;max-width:240px;max-height:260px;overflow:auto;background:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);border:1px solid #e1e5e9;border-radius:8px;padding:8px;box-shadow:0 8px 32px rgba(0,0,0,0.15);z-index:10000;backdrop-filter: blur(10px);`,
+        groupMenuBtn: `background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:#fff;border:none;border-radius:6px;padding:8px 12px;text-align:left;font-size:14px;cursor:pointer;white-space:nowrap;position:relative;box-shadow:0 2px 8px rgba(0,0,0,0.1);`,
+        groupMenuEmpty: `padding:8px 6px;color:#666;font-size:14px;white-space:nowrap;`
     };
 
     // 面板数据
@@ -4698,43 +4904,43 @@
     }
 
     // 弹窗样式常量
-    const POPUP_CONTAINER_STYLE = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:2147483647;display:flex;align-items:center;justify-content:center';
-    const POPUP_CONTENT_BASE_STYLE = 'min-width:400px;background:white;border-radius:12px;padding:5px 20px;box-shadow:0 10px 40px rgba(0,0,0,0.3)';
-    const POPUP_TITLE_STYLE = 'font-size:16px;font-weight:bold;color:#222;margin-bottom:10px';
+    const POPUP_CONTAINER_STYLE = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:2147483647;display:flex;align-items:center;justify-content:center;backdrop-filter: blur(4px);';
+    const POPUP_CONTENT_BASE_STYLE = 'min-width:400px;background:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);border-radius:16px;padding:20px 30px;box-shadow:0 20px 60px rgba(0,0,0,0.2);border:1px solid #e1e5e9;';
+    const POPUP_TITLE_STYLE = 'font-size:18px;font-weight:600;color:#2d3748;margin-bottom:15px;';
 
     // 设置面板公共样式常量（提取公共基础，通过组合减少重复）
-    const _tabBase = 'min-width:100px;padding:12px 20px;text-align:center;cursor:pointer;font-size:14px;';
+    const _tabBase = 'min-width:100px;padding:14px 22px;text-align:center;cursor:pointer;font-size:14px;';
     const _labelBase = 'font-size:14px;color:#333;';
-    const _inputBase = 'border:1px solid #ddd;border-radius:4px;font-size:14px;';
+    const _inputBase = 'padding:8px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;transition:all 0.2s ease;';
     const _containerBase = 'display:flex;align-items:center;';
 
     const SETTINGS_STYLES = {
         // Tab样式
         tabBase: _tabBase,
-        tabActive: _tabBase + 'border-bottom:3px solid #667eea;color:#667eea;font-weight:bold;background:#e8f0fe;',
-        tabInactive: _tabBase + 'border-bottom:3px solid transparent;color:#666;background:#f5f5f5;',
+        tabActive: _tabBase + 'min-width:100px;padding:14px 22px;text-align:center;cursor:pointer;font-size:14px;border-bottom:3px solid #667eea;color:#667eea;font-weight:600;background:#e8f0fe;border-radius:8px 8px 0 0;',
+        tabInactive: _tabBase + 'min-width:100px;padding:14px 22px;text-align:center;cursor:pointer;font-size:14px;border-bottom:3px solid transparent;color:#666;background:#f5f5f5;border-radius:8px 8px 0 0;',
         // Label样式
         labelBase: _labelBase,
         labelWithCursor: _labelBase + 'cursor:pointer;flex:1;',
         labelWithMinWidth: _labelBase + 'min-width:220px;flex-shrink:0;user-select:none;',
         labelWithMinWidthSmall: _labelBase + 'min-width:82px;flex-shrink:0;',
         // Input样式
-        inputBase: 'padding:6px;' + _inputBase,
-        inputSmall: 'width:55px;padding:6px 2px;' + _inputBase + 'text-align:center;',
-        inputMedium: 'width:80px;padding:6px 10px;' + _inputBase,
-        inputTextarea: 'width:100%;min-height:60px;padding:6px;border:1px solid #667eea;border-radius:4px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box',
+        inputBase: 'padding:8px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;transition:all 0.2s ease;',
+        inputSmall: 'width:60px;padding:8px 4px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;text-align:center;transition:all 0.2s ease;',
+        inputMedium: 'width:85px;padding:8px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;transition:all 0.2s ease;',
+        inputTextarea: 'width:100%;min-height:60px;padding:8px;border:2px solid #667eea;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;transition:all 0.2s ease;',
         // Container样式
-        itemContainer: _containerBase + 'padding:10px 0;border-bottom:1px solid #f0f0f0',
-        itemContainerWithGap: _containerBase + 'padding:8px 0;border-bottom:1px solid #f0f0f0',
-        toggleContainer: _containerBase + 'justify-content:flex-start;padding:6px 0;border-bottom:1px solid #f0f0f0;gap:12px;',
-        columnsContainer: 'display:flex;gap:12px;margin-bottom:15px',
+        itemContainer: _containerBase + 'padding:12px 0;border-bottom:1px solid #f0f0f0',
+        itemContainerWithGap: _containerBase + 'padding:10px 0;border-bottom:1px solid #f0f0f0',
+        toggleContainer: _containerBase + 'justify-content:flex-start;padding:8px 0;border-bottom:1px solid #f0f0f0;gap:16px;',
+        columnsContainer: 'display:flex;gap:16px;margin-bottom:15px',
         // Tip文本样式
-        tipText: 'color:#333;font-size:14px;margin-bottom:15px;line-height:1.5',
+        tipText: 'color:#4a5568;font-size:14px;margin-bottom:15px;line-height:1.6;background-color:#f7fafc;padding:12px;border-radius:8px;border-left:4px solid #667eea;',
         // 其他样式
-        checkboxSmall: 'margin-right:8px;width:16px;height:16px;cursor:pointer;',
+        checkboxSmall: 'margin-right:10px;width:18px;height:18px;cursor:pointer;',
         checkboxHidden: 'opacity:0;width:0;height:0;position:absolute;',
-        closeBtn: 'cursor:pointer;font-size:20px;font-weight:bold;color:#999;padding:5px;position:absolute;top:15px;right:15px',
-        saveBtn: 'padding:4px 8px;background:#4caf50;color:white;border:none;border-radius:4px;cursor:pointer;font-size:12px;flex-shrink:0'
+        closeBtn: 'cursor:pointer;font-size:22px;font-weight:bold;color:#718096;padding:8px;position:absolute;top:18px;right:18px;transition:all 0.2s ease;',
+        saveBtn: 'padding:6px 12px;background:linear-gradient(135deg, #48bb78 0%, #38a169 100%);color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;flex-shrink:0;box-shadow:0 2px 8px rgba(72, 187, 120, 0.3);'
     };
 
     /**
@@ -4763,10 +4969,16 @@
      * 创建主按钮（渐变紫色）
      */
     function createPrimaryButton(text, onClick) {
-        const btn = createTag('button', text, 'padding:10px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;border:none;border-radius:4px;cursor:pointer;font-size:14px');
+        const btn = createTag('button', text, 'padding:12px 20px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;box-shadow:0 4px 12px rgba(102, 126, 234, 0.3);transition:all 0.2s ease;');
         btn.onclick = onClick;
-        btn.addEventListener('mouseenter', () => btn.style.opacity = '0.85');
-        btn.addEventListener('mouseleave', () => btn.style.opacity = '1');
+        btn.addEventListener('mouseenter', () => {
+            btn.style.transform = 'translateY(-2px)';
+            btn.style.boxShadow = '0 6px 16px rgba(102, 126, 234, 0.4)';
+        });
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transform = 'translateY(0)';
+            btn.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)';
+        });
         return btn;
     }
 
@@ -4866,23 +5078,23 @@
 
         const labelDiv = createTag('div', label, SETTINGS_STYLES.labelBase);
 
-        const switchContainer = createTag('label', '', 'position:relative;display:inline-block;width:44px;height:26px;cursor:pointer;flex-shrink:0');
+        const switchContainer = createTag('label', '', 'position:relative;display:inline-block;width:50px;height:28px;cursor:pointer;flex-shrink:0');
 
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.checked = checked;
         checkbox.style.cssText = SETTINGS_STYLES.checkboxHidden;
 
-        const slider = createTag('span', '', 'position:absolute;top:0;left:0;right:0;bottom:0;background-color:' + (checked ? '#34c759' : '#ccc') + ';transition:0.3s;border-radius:26px;');
+        const slider = createTag('span', '', 'position:absolute;top:0;left:0;right:0;bottom:0;background-color:' + (checked ? '#48bb78' : '#cbd5e0') + ';transition:0.3s;border-radius:34px;');
         slider.style.cssText += 'cursor:pointer;';
 
-        const sliderCircle = createTag('span', '', 'position:absolute;content:"";height:20px;width:20px;left:' + (checked ? '21px' : '3px') + ';bottom:3px;background-color:white;transition:0.3s;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,0.2);');
+        const sliderCircle = createTag('span', '', 'position:absolute;content:"";height:22px;width:22px;left:' + (checked ? '26px' : '3px') + ';bottom:3px;background-color:white;transition:0.3s;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.2);');
         sliderCircle.style.cssText += 'cursor:pointer;';
 
         checkbox.addEventListener('change', function() {
             const isChecked = checkbox.checked;
-            slider.style.backgroundColor = isChecked ? '#34c759' : '#ccc';
-            sliderCircle.style.left = isChecked ? '21px' : '3px';
+            slider.style.backgroundColor = isChecked ? '#48bb78' : '#cbd5e0';
+            sliderCircle.style.left = isChecked ? '26px' : '3px';
             onChange(isChecked);
         });
 
