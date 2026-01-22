@@ -3608,8 +3608,8 @@
         panel: `z-index:100000;cursor:pointer;position:fixed;right:10px;bottom:110px;max-height:450px;width:calc(${PANEL_COLUMN_WIDTH} * 2 + 110px);background:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);border:1px solid #e1e5e9;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.12);overflow-y:auto;padding:12px 8px;display:flex;flex-direction:column;align-items:flex-start;backdrop-filter: blur(10px);`,
         panelCompact: `width:auto;padding-top:0px;padding-bottom:0px;`,
         buttonContainer: `display:flex;align-items:center;gap:12px;width:calc(${PANEL_BUTTON_WIDTH} + ${PANEL_BUTTON_WIDTH} + ${PANEL_BUTTON_WIDTH} + ${PANEL_BUTTON_WIDTH} + 16px);margin-bottom:10px;margin-top:2px`,
-        buttonBase: `display:inline-flex;align-items:center;justify-content:center;text-align:center;color:white;border:none;border-radius:8px;padding:8px 12px;font-size:14px;cursor:pointer;width:${PANEL_BUTTON_WIDTH};height:40px;flex-shrink:0;transition:all 0.2s ease;box-shadow:0 2px 8px rgba(0,0,0,0.1);`,
-        disable: `background:linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);`,
+        buttonBase: `display:inline-flex;align-items:center;justify-content:center;text-align:center;color:white;border:none;border-radius:8px;padding:8px 12px;font-size:14px;cursor:pointer;width:${PANEL_BUTTON_WIDTH};height:40px;flex-shrink:0;transition:all 0.2s ease;`,
+        disable: ``,
         settingsBtn: `background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);`,
         newChatBtn: `background:linear-gradient(135deg, #48bb78 0%, #38a169 100%);`,
         // 全选、清空按钮尺寸更紧凑，且使用单独宽度，高度自适应
