@@ -1669,26 +1669,26 @@
             levelBtnHover: `background-color:#e2e8f0;border-color:#cbd5e0;`,
             levelBtnLeave: `background-color:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);border-color:#e2e8f0;color:#4a5568;`,
 
-            subNavMaxWidthBtn: `position:absolute;top:2px;right:${SUB_POS_RIGHT};font-size:13px;margin:0 4px;padding:0 6px;cursor:pointer;color:#2d3748;height:24px;display:flex;align-items:center;justify-content:center;border:1px solid #e2e8f0;border-radius:6px;transition:background-color 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
+            subNavMaxWidthBtn: `font-size:13px;margin:0 4px;padding:0 6px;cursor:pointer;color:#2d3748;height:24px;display:flex;align-items:center;justify-content:center;border:1px solid #e2e8f0;border-radius:6px;transition:background-color 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
             subNavMaxWidthBtnHover: `background-color:#e2e8f0;`,
             subNavMaxWidthBtnNormal: `background-color:transparent;`,
             subNavMaxWidthInput: `position:absolute;top:2px;right:${SUB_POS_RIGHT};width:50px;height:24px;padding:0 6px;font-size:13px;border:1px solid #e2e8f0;border-radius:6px;outline:none;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
 
-            subNavPositionBtn: `position:absolute;top:2px;right:${SUB_POS_RIGHT};font-size:13px;margin:0 4px;padding:0 6px;cursor:pointer;color:#2d3748;height:24px;display:flex;align-items:center;justify-content:center;border:1px solid #e2e8f0;border-radius:6px;transition:background-color 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
+            subNavPositionBtn: `font-size:13px;margin:0 4px;padding:0 6px;cursor:pointer;color:#2d3748;height:24px;display:flex;align-items:center;justify-content:center;border:1px solid #e2e8f0;border-radius:6px;transition:background-color 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
             subNavPositionBtnHover: `background-color:#e2e8f0;`,
             subNavPositionBtnNormal: `background-color:transparent;`,
             subNavPositionInput: `position:absolute;top:2px;right:${SUB_POS_RIGHT};width:50px;height:24px;padding:0 6px;font-size:13px;border:1px solid #e2e8f0;border-radius:6px;outline:none;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
 
-            subNavAlignLeftBtn: `position:absolute;top:${SUB_ALIGN_LEFT_TOP};right:${SUB_POS_RIGHT};font-size:13px;padding:0 4px;margin:0 4px;cursor:pointer;color:#2d3748;display:flex;align-items:center;justify-content:center;border:1px solid #e2e8f0;border-radius:6px;transition:background-color 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
+            subNavAlignLeftBtn: `font-size:13px;padding:0 4px;margin:0 4px;cursor:pointer;color:#2d3748;display:flex;align-items:center;justify-content:center;border:1px solid #e2e8f0;border-radius:6px;transition:background-color 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
             subNavAlignLeftBtnHover: `background-color:#e2e8f0;`,
             subNavAlignLeftBtnActive: `background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:#fff;`,
             subNavAlignLeftBtnNormal: `background-color:transparent;`,
 
-            subNavAlignRightBtn: `position:absolute;top:${SUB_ALIGN_LEFT_TOP};right:${SUB_POS_RIGHT};font-size:13px;padding:0 4px;margin:0 4px;cursor:pointer;color:#2d3748;display:flex;align-items:center;justify-content:center;border:1px solid #e2e8f0;border-radius:6px;transition:background-color 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
+            subNavAlignRightBtn: `font-size:13px;padding:0 4px;margin:0 4px;cursor:pointer;color:#2d3748;display:flex;align-items:center;justify-content:center;border:1px solid #e2e8f0;border-radius:6px;transition:background-color 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
             subNavAlignRightBtnHover: `background-color:#e2e8f0;`,
             subNavAlignRightBtnActive: `background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:#fff;`,
             subNavAlignRightBtnNormal: `background-color:transparent;`,
-            subNavButtonRow: `display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:6px;`
+            subNavButtonRow: `display:flex;align-items:center;justify-content:flex-start;gap:6px;margin-top:6px;`
         };
     };
 
