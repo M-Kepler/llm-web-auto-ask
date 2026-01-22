@@ -1643,7 +1643,7 @@
             // 主目录样式
             navBar: `position:fixed;visibility:hidden;top:${navTop};right:15px;max-width:${navMaxWidth};min-width:150px;background:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);border:1px solid #e1e5e9;border-radius:12px;padding:0 8px;z-index:99999;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.12);max-height:90vh;overflow-y:auto;box-sizing:border-box;backdrop-filter: blur(10px);margin:0;`,
             miniButton: `position:fixed;top:${navTop};right:15px;color:${NAV_ITEM_COLOR};border:1px solid #e1e5e9;border-radius:10px;padding:4px 10px;font-size:14px;font-weight: 600;cursor:pointer;z-index:99999;visibility:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.15);user-select:none;background:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);`,
-            title: `display:flex;align-items:center;justify-content:flex-start;gap:8px;font-weight:600;color:#2d3748;padding:6px 8px;border-bottom:1px solid #eaeef2;margin-bottom:6px;position:sticky;top:30px;background:rgba(255,255,255,0.95);z-index:10;border-radius:8px 8px 0 0;`,
+            title: `display:flex;align-items:center;justify-content:flex-start;gap:8px;font-weight:600;color:#2d3748;padding:6px 8px;border-bottom:1px solid #eaeef2;margin-bottom:6px;z-index:10;border-radius:8px 8px 0 0;`,
             hideBtn: `font-weight:500;color:#4a5568;font-size:12px;padding:4px 8px;border:1px solid #cbd5e0;border-radius:12px;cursor:pointer;user-select:none;transition:all 0.2s ease;`,
             countText: `font-weight:500;color:#4a5568;font-size:14px;margin-left:8px;user-select:none;`,
             linkContainer: `display:flex;align-items:center;gap:6px;width:100%;`,
