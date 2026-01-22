@@ -1178,9 +1178,9 @@
 
     /******************************************************************************
      * ═══════════════════════════════════════════════════════════════════════
-     * ║                                                                      ║
-     * ║  🎨 8、输入框的显示/隐藏切换 🎨                        ║
-     * ║                                                                      ║
+     * ║                                                                     ║
+     * ║  🎨 8、输入框的显示/隐藏切换 🎨                                      ║
+     * ║                                                                     ║
      * ═══════════════════════════════════════════════════════════════════════
      ******************************************************************************/
 
@@ -1703,12 +1703,13 @@
     let isMainNavDragging = false;
     let mainNavOffsetX, mainNavOffsetY;
     
-    // 添加可拖拽的标题栏
-    const mainDragHandle = createTag('div', "", 'position:absolute;top:0;left:0;right:0;height:30px;cursor:move;background:transparent;z-index:999999;');
+    // 添加可拖拽的标题栏（仅限"主目录"文字区域）
+    const mainDragHandle = createTag('div', "", 'position:absolute;top:5px;left:3px;width:50px;height:22px;cursor:move;background:transparent;z-index:999999;overflow:hidden;');
     mainDragHandle.id = 'main-nav-drag-handle';
     mainDragHandle.style.cssText += 'cursor:move;';
     // 添加拖拽手柄的视觉提示
     mainDragHandle.title = '拖拽此处移动主目录位置';
+    // mainDragHandle.style.background = 'rgba(255, 0, 0, 0.2)'; // 调试用，实际使用时不需要
     mainDragHandle.addEventListener('mousedown', (e) => {
         if (e.target !== mainDragHandle && !mainDragHandle.contains(e.target)) {
             return; // 只有点击在拖拽手柄上才开始拖拽
@@ -1825,8 +1826,8 @@
     let isDragging = false;
     let offsetX, offsetY;
     
-    // 添加可拖拽的标题栏
-    const dragHandle = createTag('div', "", 'position:absolute;top:0;left:0;right:0;height:30px;cursor:move;background:transparent;z-index:999999;');
+    // 添加可拖拽的标题栏（仅限"副目录"文字区域）
+    const dragHandle = createTag('div', "", 'position:absolute;top:5px;left:3px;width:50px;height:22px;cursor:move;background:transparent;z-index:999999;overflow:hidden;');
     dragHandle.id = 'sub-nav-drag-handle';
     dragHandle.style.cssText += 'cursor:move;';
     // 添加拖拽手柄的视觉提示
@@ -2975,14 +2976,9 @@
         // 清空副目录栏，但保留拖拽手柄
         const dragHandle = subNavBar.querySelector('#sub-nav-drag-handle');
         subNavBar.replaceChildren();
-        
-        // 如果存在拖拽手柄，重新添加它
-        if (dragHandle) {
-            subNavBar.appendChild(dragHandle);
-        }
 
         // 创建标题容器（sticky定位，用于冻结顶栏）
-        const titleContainer = createTag('div', "", 'position:sticky;top:0;background:rgba(255,255,255,1);z-index:10;padding:5px 0;padding-bottom:6px;border-bottom:1px solid #eaeaea;margin-top:30px;');
+        const titleContainer = createTag('div', "", 'position:sticky;top:0;z-index:10;padding:5px 0;padding-bottom:6px;border-bottom:1px solid #eaeaea;margin-top:3px;background:inherit;');
         titleContainer.className = 'sub-nav-title-container';
         
         // 第一行：标题、层级按钮组、关闭按钮
@@ -3022,6 +3018,12 @@
         
         appendSeveral(buttonRow, maxWidthBtn, positionBtn, alignLeftBtn, alignRightBtn);
         titleContainer.appendChild(buttonRow);
+        
+        // 如果存在拖拽手柄，添加到标题容器中（覆盖在标题文本上方）
+        if (dragHandle) {
+            titleContainer.style.position = 'relative'; // 确保拖拽手柄相对标题容器定位
+            titleContainer.appendChild(dragHandle);
+        }
 
         // 添加到副目录栏
         subNavBar.appendChild(titleContainer);
@@ -3538,10 +3540,7 @@
         const mainDragHandle = navBar.querySelector('#main-nav-drag-handle');
         navBar.replaceChildren();
         
-        // 如果存在拖拽手柄，重新添加它
-        if (mainDragHandle) {
-            navBar.appendChild(mainDragHandle);
-        }
+        // 注意：主目录拖拽手柄将被添加到标题元素上，所以不需要在这里添加
         
         navLinks = [];
         elToLink.clear();
@@ -3550,7 +3549,14 @@
         // 更新当前导航栏对应的 URL
         currentNavBarUrl = currentUrl;
 
-        navBar.appendChild(createTitle());
+        const titleElement = createTitle();
+        navBar.appendChild(titleElement);
+        
+        // 如果存在拖拽手柄，将其添加到标题容器中（覆盖在"主目录"文字上方）
+        if (mainDragHandle) {
+            titleElement.style.position = 'relative'; // 确保拖拽手柄相对标题容器定位
+            titleElement.appendChild(mainDragHandle);
+        }
         navQuestions = thisQuestions;
 
         navQuestions.forEach((el, i) => {
