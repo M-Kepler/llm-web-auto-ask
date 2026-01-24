@@ -338,7 +338,7 @@
     const TOP_LEVEL_GROUP_ID_COUNTER = "topLevelGroupIdCounter"; // 一级分组ID计数器（从1000开始）
     const BOOKMARK_QUESTION_MAX_LENGTH = 150; // 书签question最大长度
     // 书签按钮公共样式（不包含 bottom 和 background）
-    const BOOKMARK_BTN_BASE_STYLE = "position:fixed;right:0;color:white;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;border-radius:12px 0 0 12px;box-shadow:-4px 4px 16px rgba(0,0,0,0.15);user-select:none;padding:8px 12px;transition:all 0.3s ease;backdrop-filter: blur(10px);";
+    const BOOKMARK_BTN_BASE_STYLE = "position:fixed;right:0;color:white;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10000;border-radius:12px 0 0 12px;box-shadow:-4px 4px 16px rgba(0,0,0,0.15);user-select:none;padding:8px 12px;transition:background 0.2s ease,box-shadow 0.2s ease;backdrop-filter: blur(10px);";
 
     let userid = getGV("userid");
     if(isEmpty(userid)){
@@ -1191,7 +1191,7 @@
     // 更新切换按钮相关常量
     const TOGGLE_BUTTON_BG_SHOW = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
     const TOGGLE_BUTTON_BG_HIDE = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
-    const TOGGLE_BUTTON_STYLE = `font-size:14px;padding:8px;cursor:pointer;background:${TOGGLE_BUTTON_BG_SHOW};color:white;border:1px solid #e1e5e9;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;transition:all 0.2s ease;`;
+    const TOGGLE_BUTTON_STYLE = `font-size:14px;padding:8px;cursor:pointer;background:${TOGGLE_BUTTON_BG_SHOW};color:white;border:1px solid #e1e5e9;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;transition:background 0.15s ease,color 0.15s ease;`;
     const SYNC_SWITCH_TITLE = '同步提问开关';
 
     // 切换状态配置
@@ -1210,7 +1210,7 @@
 
     // 创建按钮容器（垂直排列，右对齐）
     const toggleButtonContainer = createTag('div', '', 'position:fixed;z-index:99999999;display:flex;flex-direction:column;align-items:flex-end;gap:5px;');
-    
+
     const toggleButton = createTag('div', TOGGLE_STATES.show.text, TOGGLE_BUTTON_STYLE);
     toggleButton.title = '临时隐藏输入框获得更大的视野高度';
     const toggleDisableButton = createTag('div', '', TOGGLE_BUTTON_STYLE);
@@ -1221,11 +1221,17 @@
         e.stopPropagation();
         disableEvent(e);
     });
-    
+
     // 将按钮添加到容器中（禁用按钮在上方）
     appendSeveral(toggleButtonContainer, toggleDisableButton, toggleButton);
 
-    const getNthParent = (el, n) => n > 0 ? getNthParent(el?.parentElement, n - 1) : el;
+    const getNthParent = (el, n) => {
+        let current = el;
+        for (let i = 0; i < n && current; i++) {
+            current = current.parentElement;
+        }
+        return current;
+    };
 
     function getNthInputArea(){
         const inputArea = getInputArea();
@@ -1257,13 +1263,18 @@
 
         const state = isHidden ? TOGGLE_STATES.show : TOGGLE_STATES.hide;
         toggleBtnStatus(isHidden);
-        aroundInputArea.style.display = state.display;
+        // 使用 requestAnimationFrame 优化 DOM 操作，减少重排
+        requestAnimationFrame(() => {
+            aroundInputArea.style.display = state.display;
+        });
     }
 
     function toggleBtnStatus(isHidden){
         const state = isHidden ? TOGGLE_STATES.show : TOGGLE_STATES.hide;
         toggleButton.textContent = state.text;
+        // 直接设置背景色，避免不必要的过渡动画
         toggleButton.style.background = state.bg;
+        toggleButton.style.transition = 'background 0.15s ease,color 0.15s ease';
     }
 
     // 应用默认隐藏输入框设置
@@ -1323,10 +1334,107 @@
 
     // 监听窗口宽度变化，更新toggle按钮的位置和显示状态
     let resizeTimer = null;
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
         // 防抖处理，避免频繁触发
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => updateToggleButtonPosition(true), 50);
+        resizeTimer = setTimeout(() => {
+            updateToggleButtonPosition(true);
+
+            const currentWindowWidth = window.innerWidth;
+            const currentWindowHeight = window.innerHeight;
+
+            // 对于已拖拽的navBar，尝试恢复原始位置，然后检查边界
+            if (navBar && navBar.dataset.dragged === "true") {
+                const savedMainPosition = getGV("mainNavPosition");
+
+                // 尝试恢复到原始拖拽位置
+                if (savedMainPosition && savedMainPosition.left && savedMainPosition.top) {
+                    const originalLeft = parseFloat(savedMainPosition.left);
+                    const originalTop = parseFloat(savedMainPosition.top);
+                    navBar.style.left = `${originalLeft}px`;
+                    navBar.style.top = `${originalTop}px`;
+                }
+
+                // 再次检查是否超出边界，如果超出则调整
+                const navBarRect = navBar.getBoundingClientRect();
+                let shouldUpdate = false;
+                let finalLeft = parseFloat(navBar.style.left) || navBarRect.left;
+                let finalTop = parseFloat(navBar.style.top) || navBarRect.top;
+
+                // 检查是否超出右边界
+                if (navBarRect.right > currentWindowWidth) {
+                    finalLeft = currentWindowWidth - navBarRect.width - 10;
+                    shouldUpdate = true;
+                }
+                // 检查是否超出左边界
+                else if (navBarRect.left < 0) {
+                    finalLeft = 10;
+                    shouldUpdate = true;
+                }
+
+                // 检查是否超出下边界
+                if (navBarRect.bottom > currentWindowHeight) {
+                    finalTop = currentWindowHeight - navBarRect.height - 10;
+                    shouldUpdate = true;
+                }
+                // 检查是否超出上边界
+                else if (navBarRect.top < 0) {
+                    finalTop = 10;
+                    shouldUpdate = true;
+                }
+
+                if (shouldUpdate) {
+                    navBar.style.left = `${Math.max(0, finalLeft)}px`;
+                    navBar.style.top = `${Math.max(0, finalTop)}px`;
+                }
+            }
+
+            // 对于已拖拽的subNavBar，也进行类似处理
+            if (subNavBar && subNavBar.dataset.dragged === "true") {
+                const savedPosition = getGV("subNavPosition");
+
+                // 尝试恢复到原始拖拽位置
+                if (savedPosition && savedPosition.left && savedPosition.top) {
+                    const originalLeft = parseFloat(savedPosition.left);
+                    const originalTop = parseFloat(savedPosition.top);
+                    subNavBar.style.left = `${originalLeft}px`;
+                    subNavBar.style.top = `${originalTop}px`;
+                }
+
+                // 再次检查是否超出边界，如果超出则调整
+                const subNavBarRect = subNavBar.getBoundingClientRect();
+                let shouldUpdate = false;
+                let finalLeft = parseFloat(subNavBar.style.left) || subNavBarRect.left;
+                let finalTop = parseFloat(subNavBar.style.top) || subNavBarRect.top;
+
+                // 检查是否超出右边界
+                if (subNavBarRect.right > currentWindowWidth) {
+                    finalLeft = currentWindowWidth - subNavBarRect.width - 10;
+                    shouldUpdate = true;
+                }
+                // 检查是否超出左边界
+                else if (subNavBarRect.left < 0) {
+                    finalLeft = 10;
+                    shouldUpdate = true;
+                }
+
+                // 检查是否超出下边界
+                if (subNavBarRect.bottom > currentWindowHeight) {
+                    finalTop = currentWindowHeight - subNavBarRect.height - 10;
+                    shouldUpdate = true;
+                }
+                // 检查是否超出上边界
+                else if (subNavBarRect.top < 0) {
+                    finalTop = 10;
+                    shouldUpdate = true;
+                }
+
+                if (shouldUpdate) {
+                    subNavBar.style.left = `${Math.max(0, finalLeft)}px`;
+                    subNavBar.style.top = `${Math.max(0, finalTop)}px`;
+                }
+            }
+            }, 50);
     });
 
     /**
@@ -1644,11 +1752,11 @@
             navBar: `position:fixed;visibility:hidden;top:${navTop};right:15px;max-width:${navMaxWidth};min-width:150px;background:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);border:1px solid #e1e5e9;border-radius:12px;padding:0 8px;z-index:99999;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.12);max-height:90vh;overflow-y:auto;box-sizing:border-box;backdrop-filter: blur(10px);margin:0;`,
             miniButton: `position:fixed;top:${navTop};right:15px;color:${NAV_ITEM_COLOR};border:1px solid #e1e5e9;border-radius:10px;padding:4px 10px;font-size:14px;font-weight: 600;cursor:pointer;z-index:99999;visibility:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.15);user-select:none;background:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);`,
             title: `display:flex;align-items:center;justify-content:flex-start;gap:8px;font-weight:600;color:#2d3748;padding:6px 8px;border-bottom:1px solid #eaeef2;margin-bottom:6px;z-index:10;border-radius:8px 8px 0 0;`,
-            hideBtn: `font-weight:500;color:#4a5568;font-size:12px;padding:4px 8px;border:1px solid #cbd5e0;border-radius:12px;cursor:pointer;user-select:none;transition:all 0.2s ease;`,
+            hideBtn: `font-weight:500;color:#4a5568;font-size:12px;padding:4px 8px;border:1px solid #cbd5e0;border-radius:12px;cursor:pointer;user-select:none;transition:background-color 0.15s ease,color 0.15s ease;`,
             countText: `font-weight:500;color:#4a5568;font-size:14px;margin-left:8px;user-select:none;`,
             linkContainer: `display:flex;align-items:center;gap:6px;width:100%;`,
-            link: `width:100%;padding:6px 4px;cursor:pointer;color:#2d3748;font-size:14px;line-height:1.5;white-space:normal;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word;max-height:calc(1.9em * 2);box-sizing:border-box;border-radius:6px;transition:all 0.2s ease;`,
-            waveIcon: `font-size:14px;cursor:pointer;color:#4a5568;padding:0;border-radius:4px;user-select:none;flex-shrink:0;transition:background-color 0.2s;`,
+            link: `width:100%;padding:6px 4px;cursor:pointer;color:#2d3748;font-size:14px;line-height:1.5;white-space:normal;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word;max-height:calc(1.9em * 2);box-sizing:border-box;border-radius:6px;transition:background-color 0.15s ease,color 0.15s ease;`,
+            waveIcon: `font-size:14px;cursor:pointer;color:#4a5568;padding:0;border-radius:4px;user-select:none;flex-shrink:0;transition:background-color 0.15s ease,color 0.15s ease;`,
             waveIconHover: `background-color:#e2e8f0;color:#2b6cb0;`,
             waveIconNormal: `background-color:transparent;color:#4a5568;`,
 
@@ -1657,15 +1765,15 @@
             subNavTitle: `font-weight:600;color:#1a202c;padding:6px 0;border-bottom:1px solid #eaeef2;margin-bottom:8px;font-size:14px;`,
             subNavCloseBtn: `position:absolute;top:2px;right:8px;font-size:20px;cursor:pointer;color:#4a5568;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:background-color 0.2s;`,
 
-            subNavItem: `padding:6px 4px;cursor:pointer;color:#2d3748;font-size:13px;line-height:1.6;border-radius:6px;margin:3px 0;transition:all 0.2s ease;word-break:break-word;`,
+            subNavItem: `padding:6px 4px;cursor:pointer;color:#2d3748;font-size:13px;line-height:1.6;border-radius:6px;margin:3px 0;transition:background-color 0.15s ease,color 0.15s ease;word-break:break-word;`,
             subNavItemH1: `padding-left:0px;font-weight:700;`,
             subNavItemH2: `padding-left:4px;font-weight:600;`,
             subNavItemH3: `padding-left:12px;font-weight:500;`,
             subNavItemH4: `padding-left:20px;font-weight:400;`,
 
             levelBtnGroup: `display:flex;gap:6px;align-items:center;`,
-            levelBtn: `padding:4px 6px;font-size:12px;cursor:pointer;border:1px solid #e2e8f0;border-radius:6px;background:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);color:#4a5568;transition:all 0.2s;user-select:none;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
-            levelBtnActive: `font-weight:500;color:#4a5568;font-size:12px;padding:4px 8px;border:1px solid #cbd5e0;border-radius:12px;cursor:pointer;user-select:none;transition:all 0.2s ease;`,
+            levelBtn: `padding:4px 6px;font-size:12px;cursor:pointer;border:1px solid #e2e8f0;border-radius:6px;background:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);color:#4a5568;transition:background-color 0.15s ease,border-color 0.15s ease,color 0.15s ease;user-select:none;box-shadow:0 1px 3px rgba(0,0,0,0.1);`,
+            levelBtnActive: `font-weight:500;color:#4a5568;font-size:12px;padding:4px 8px;border:1px solid #cbd5e0;border-radius:12px;cursor:pointer;user-select:none;transition:background-color 0.15s ease,border-color 0.15s ease,color 0.15s ease;`,
             levelBtnHover: `background-color:#e2e8f0;border-color:#cbd5e0;`,
             levelBtnLeave: `background-color:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);border-color:#e2e8f0;color:#4a5568;`,
 
@@ -1698,11 +1806,11 @@
     // 创建导航元素
     const navBar = createTag('div', "", NAV_STYLES.navBar);
     navBar.id = "tool-nav-bar";
-    
+
     // 添加拖拽功能到主目录栏
     let isMainNavDragging = false;
     let mainNavOffsetX, mainNavOffsetY;
-    
+
     // 添加可拖拽的标题栏（仅限"主目录"文字区域）
     const mainDragHandle = createTag('div', "", 'position:absolute;top:5px;left:3px;width:50px;height:22px;cursor:move;background:transparent;z-index:999999;overflow:hidden;');
     mainDragHandle.id = 'main-nav-drag-handle';
@@ -1715,34 +1823,50 @@
             return; // 只有点击在拖拽手柄上才开始拖拽
         }
         isMainNavDragging = true;
-        mainNavOffsetX = e.clientX - navBar.getBoundingClientRect().left;
-        mainNavOffsetY = e.clientY - navBar.getBoundingClientRect().top;
+
+        // 获取当前位置（如果还没有 left/top 则从 getBoundingClientRect 获取）
+        let currentLeft = parseFloat(navBar.style.left);
+        let currentTop = parseFloat(navBar.style.top);
+        if (isNaN(currentLeft)) {
+            currentLeft = navBar.getBoundingClientRect().left;
+        }
+        if (isNaN(currentTop)) {
+            currentTop = navBar.getBoundingClientRect().top;
+        }
+
+        mainNavOffsetX = e.clientX - currentLeft;
+        mainNavOffsetY = e.clientY - currentTop;
+
+        // 确保清除 right 属性，改用 left
+        navBar.style.right = 'auto';
+        navBar.style.left = `${currentLeft}px`;
+        navBar.style.top = `${currentTop}px`;
         navBar.style.zIndex = '2147483647'; // 确保拖拽时在最顶层
         e.preventDefault();
     });
-    
+
     document.addEventListener('mousemove', (e) => {
         if (!isMainNavDragging) return;
-        
+
         const newX = e.clientX - mainNavOffsetX;
         const newY = e.clientY - mainNavOffsetY;
-        
+
         // 边界检查
         const windowWidth = window.innerWidth;
         const windowHeight = window.innerHeight;
         const elementWidth = navBar.offsetWidth;
         const elementHeight = navBar.offsetHeight;
-        
+
         const boundedX = Math.max(0, Math.min(newX, windowWidth - elementWidth));
         const boundedY = Math.max(0, Math.min(newY, windowHeight - elementHeight));
-        
+
         navBar.style.left = `${boundedX}px`;
         navBar.style.top = `${boundedY}px`;
         // 重置 right 属性以避免冲突
         navBar.style.right = 'auto';
         navBar.style.margin = '0';
     });
-    
+
     document.addEventListener('mouseup', () => {
         if (isMainNavDragging) {
             isMainNavDragging = false;
@@ -1760,10 +1884,10 @@
             }
         }
     });
-    
+
     // 添加拖拽手柄到主目录栏
     navBar.appendChild(mainDragHandle);
-    
+
     // 检查并恢复之前保存的位置
     const savedMainPosition = getGV('mainNavPosition');
     if (savedMainPosition && savedMainPosition.left && savedMainPosition.top) {
@@ -1774,32 +1898,31 @@
         // 标记为已拖拽，避免与自动定位冲突
         navBar.dataset.dragged = 'true';
     }
-    
+
     const navMiniButton = createTag('div', '目录', NAV_STYLES.miniButton);
 
     // 更新导航栏样式的函数（当变量改变时调用）
     const updateNavStyles = () => {
         const styles = getNavStyles();
         if (navBar) {
+            // 只有在未被拖拽的情况下才更新top值
+            if (navBar.dataset.dragged !== 'true') {
             navBar.style.top = getNavTop();
+            }
             navBar.style.maxWidth = getNavMaxWidth();
         }
         if (navMiniButton) {
-            navMiniButton.style.top = getNavTop();
+            // navMiniButton的top始终跟随navBar的top值
+            navMiniButton.style.top = navBar.style.top;
         }
         if (subNavBar) {
+            // 只有在未被拖拽的情况下才更新top值
+            if (subNavBar.dataset.dragged !== 'true') {
             subNavBar.style.top = getSubNavTop();
+            }
             subNavBar.style.maxWidth = getSubNavMaxWidth();
         }
-        // 刷新导航栏显示状态以应用新的top值
-        if (typeof refreshNavBarVisibility === 'function') {
-            refreshNavBarVisibility();
-        }
-        if (typeof updateSubNavTop === 'function') {
-            updateSubNavTop();
-        }
-    };
-
+	};
 
     let subNavLeftKey = T + "subNavLeft";
 
@@ -1821,11 +1944,11 @@
     const subNavLeft = getSubNavLeft();
     const subNavBar = createTag('div', "", NAV_STYLES.subNavBar.replace(`left:${SUB_NAV_LEFT}`, `left:${subNavLeft}`));
     subNavBar.id = "tool-sub-nav-bar";
-    
+
     // 添加拖拽功能到副目录栏
     let isDragging = false;
     let offsetX, offsetY;
-    
+
     // 添加可拖拽的标题栏（仅限"副目录"文字区域）
     const dragHandle = createTag('div', "", 'position:absolute;top:5px;left:3px;width:50px;height:22px;cursor:move;background:transparent;z-index:999999;overflow:hidden;');
     dragHandle.id = 'sub-nav-drag-handle';
@@ -1839,33 +1962,49 @@
             return; // 只有点击在拖拽手柄上才开始拖拽
         }
         isDragging = true;
-        offsetX = e.clientX - subNavBar.getBoundingClientRect().left;
-        offsetY = e.clientY - subNavBar.getBoundingClientRect().top;
+
+        // 获取当前位置（如果还没有 left/top 则从 getBoundingClientRect 获取）
+        let currentLeft = parseFloat(subNavBar.style.left);
+        let currentTop = parseFloat(subNavBar.style.top);
+        if (isNaN(currentLeft)) {
+            currentLeft = subNavBar.getBoundingClientRect().left;
+        }
+        if (isNaN(currentTop)) {
+            currentTop = subNavBar.getBoundingClientRect().top;
+        }
+
+        offsetX = e.clientX - currentLeft;
+        offsetY = e.clientY - currentTop;
+
+        // 确保清除 right 属性，改用 left
+        subNavBar.style.right = 'auto';
+        subNavBar.style.left = `${currentLeft}px`;
+        subNavBar.style.top = `${currentTop}px`;
         subNavBar.style.zIndex = '2147483647'; // 确保拖拽时在最顶层
         e.preventDefault();
     });
-    
+
     document.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
-        
+
         const newX = e.clientX - offsetX;
         const newY = e.clientY - offsetY;
-        
+
         // 边界检查
         const windowWidth = window.innerWidth;
         const windowHeight = window.innerHeight;
         const elementWidth = subNavBar.offsetWidth;
         const elementHeight = subNavBar.offsetHeight;
-        
+
         const boundedX = Math.max(0, Math.min(newX, windowWidth - elementWidth));
         const boundedY = Math.max(0, Math.min(newY, windowHeight - elementHeight));
-        
+
         subNavBar.style.left = `${boundedX}px`;
         subNavBar.style.top = `${boundedY}px`;
         // 重置 right 属性以避免冲突
         subNavBar.style.right = 'auto';
     });
-    
+
     document.addEventListener('mouseup', () => {
         if (isDragging) {
             isDragging = false;
@@ -1883,10 +2022,10 @@
             }
         }
     });
-    
+
     // 添加拖拽手柄到副目录栏
     subNavBar.appendChild(dragHandle);
-    
+
     // 检查并恢复之前保存的位置
     const savedPosition = getGV('subNavPosition');
     if (savedPosition && savedPosition.left && savedPosition.top) {
@@ -1897,7 +2036,7 @@
         // 标记为已拖拽，避免与自动定位冲突
         subNavBar.dataset.dragged = 'true';
     }
-    
+
     const alignLeftValue = SUB_ALIGN_LEFT_VALUE;
     const alignRightValue = SUB_ALIGN_RIGHT_VALUE;
     let isSubNavAlignedLeft = subNavLeft === alignLeftValue;
@@ -2492,7 +2631,7 @@
 
         // 获取所有出现的标题层级（从小到大排序）
         const allLevels = [...new Set(currentSubNavHeadings.map(h => h.level))].sort((a, b) => a - b);
-        
+
         // 从后往前分配字体粗细
         const fontWeightValues = [400, 500, 600, 700];
         const levelToWeightMap = {};
@@ -2980,7 +3119,7 @@
         // 创建标题容器（sticky定位，用于冻结顶栏）
         const titleContainer = createTag('div', "", 'position:sticky;top:0;z-index:10;padding:5px 0;padding-bottom:6px;border-bottom:1px solid #eaeaea;margin-top:3px;background:inherit;');
         titleContainer.className = 'sub-nav-title-container';
-        
+
         // 第一行：标题、层级按钮组、关闭按钮
         const titleRow = createTag('div', "", 'display:flex;align-items:center;justify-content:space-between;gap:8px;');
         const titleLeft = createTag('div', "", 'display:flex;align-items:center;gap:8px;flex:1;');
@@ -2995,7 +3134,7 @@
         // 组装左侧（标题和按钮组）
         appendSeveral(titleLeft, titleText, levelBtnGroup);
         titleRow.appendChild(titleLeft);
-        
+
         // 创建关闭按钮
         const closeBtn = createSubNavCloseBtn();
         titleRow.appendChild(closeBtn);
@@ -3007,7 +3146,7 @@
         const positionBtn = createSubNavPositionBtn(buttonRow);
         const alignLeftBtn = createSubNavAlignLeftBtn();
         const alignRightBtn = createSubNavAlignRightBtn();
-        
+
         // 调整按钮样式，使其在第二行正常显示
         alignLeftBtn.style.position = 'relative';
         alignLeftBtn.style.top = 'auto';
@@ -3015,10 +3154,10 @@
         alignRightBtn.style.position = 'relative';
         alignRightBtn.style.top = 'auto';
         alignRightBtn.style.right = 'auto';
-        
+
         appendSeveral(buttonRow, maxWidthBtn, positionBtn, alignLeftBtn, alignRightBtn);
         titleContainer.appendChild(buttonRow);
-        
+
         // 如果存在拖拽手柄，添加到标题容器中（覆盖在标题文本上方）
         if (dragHandle) {
             titleContainer.style.position = 'relative'; // 确保拖拽手柄相对标题容器定位
@@ -3048,7 +3187,7 @@
 
         // 显示副目录栏
         subNavBar.style.display = 'block';
-        
+
         // 如果副目录栏之前被拖拽过，恢复其位置
         if (subNavBar.dataset.dragged === 'true') {
             const savedPosition = getGV('subNavPosition');
@@ -3539,9 +3678,9 @@
         // 清空主目录栏，但保留拖拽手柄
         const mainDragHandle = navBar.querySelector('#main-nav-drag-handle');
         navBar.replaceChildren();
-        
+
         // 注意：主目录拖拽手柄将被添加到标题元素上，所以不需要在这里添加
-        
+
         navLinks = [];
         elToLink.clear();
         if(navIO) try { navIO.disconnect(); } catch(e) {}
@@ -3551,7 +3690,7 @@
 
         const titleElement = createTitle();
         navBar.appendChild(titleElement);
-        
+
         // 如果存在拖拽手柄，将其添加到标题容器中（覆盖在"主目录"文字上方）
         if (mainDragHandle) {
             titleElement.style.position = 'relative'; // 确保拖拽手柄相对标题容器定位
@@ -3608,7 +3747,7 @@
         panel: `z-index:100000;cursor:pointer;position:fixed;right:10px;bottom:110px;max-height:450px;width:calc(${PANEL_COLUMN_WIDTH} * 2 + 110px);background:linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);border:1px solid #e1e5e9;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.12);overflow-y:auto;padding:12px 8px;display:flex;flex-direction:column;align-items:flex-start;backdrop-filter: blur(10px);`,
         panelCompact: `width:auto;padding-top:0px;padding-bottom:0px;`,
         buttonContainer: `display:flex;align-items:center;gap:12px;width:calc(${PANEL_BUTTON_WIDTH} + ${PANEL_BUTTON_WIDTH} + ${PANEL_BUTTON_WIDTH} + ${PANEL_BUTTON_WIDTH} + 16px);margin-bottom:10px;margin-top:2px`,
-        buttonBase: `display:inline-flex;align-items:center;justify-content:center;text-align:center;color:white;border:none;border-radius:8px;padding:8px 12px;font-size:14px;cursor:pointer;width:${PANEL_BUTTON_WIDTH};height:40px;flex-shrink:0;transition:all 0.2s ease;`,
+        buttonBase: `display:inline-flex;align-items:center;justify-content:center;text-align:center;color:white;border:none;border-radius:8px;padding:8px 12px;font-size:14px;cursor:pointer;width:${PANEL_BUTTON_WIDTH};height:40px;flex-shrink:0;transition:background 0.15s ease,opacity 0.15s ease;`,
         disable: ``,
         settingsBtn: `background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);`,
         newChatBtn: `background:linear-gradient(135deg, #48bb78 0%, #38a169 100%);`,
@@ -3617,9 +3756,9 @@
         clearBtn: `background:linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);width:${PANEL_SMALL_BUTTON_WIDTH};padding:6px 8px;font-size:12px;height:auto;`,
         addCombinationBtn: `background:linear-gradient(135deg, #48bb78 0%, #38a169 100%);margin:8px 4px;height:auto;width:auto;box-shadow:0 2px 8px rgba(72, 187, 120, 0.3);`,
         // 组合按钮基础样式：宽度自适应，不使用固定 PANEL_BUTTON_WIDTH
-        combinationBtnBase: `text-align:center;color:white;border:none;border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer;width:auto;flex-shrink:1;transition:all 0.2s ease;box-shadow:0 2px 8px rgba(0,0,0,0.1);`,
+        combinationBtnBase: `text-align:center;color:white;border:none;border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer;width:auto;flex-shrink:1;transition:background 0.15s ease,opacity 0.15s ease;box-shadow:0 2px 8px rgba(0,0,0,0.1);`,
         // 组合按钮：宽度自适应，不使用固定 PANEL_BUTTON_WIDTH
-        combinationBtn: `background:linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);border:1px solid #e1e5e9;margin:4px;padding:6px 12px;font-size:12px;min-width:40px;white-space:nowrap;position:relative;box-shadow:0 2px 8px rgba(0,0,0,0.1);`,
+        combinationBtn: `background:linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);border:1px solid #e1e5e9;margin:4px;padding:6px 12px;font-size:12px;min-width:40px;white-space:nowrap;position:relative;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:background 0.15s ease,opacity 0.15s ease;`,
         deleteBtn: `position:absolute;top:-8px;right:-8px;width:18px;height:18px;background:linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);border-radius:50%;border:none;color:white;font-size:10px;line-height:1;cursor:pointer;display:none;z-index:10;padding:0;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,0.2);`,
         combinationContainer: `display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-top:6px;`,
         item: `display:flex;align-items:center;padding:6px 0 6px 6px;border-bottom:1px solid #f0f2f5;`,
@@ -4917,7 +5056,7 @@
     // 设置面板公共样式常量（提取公共基础，通过组合减少重复）
     const _tabBase = 'min-width:100px;padding:14px 22px;text-align:center;cursor:pointer;font-size:14px;';
     const _labelBase = 'font-size:14px;color:#333;';
-    const _inputBase = 'padding:8px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;transition:all 0.2s ease;';
+    const _inputBase = 'padding:8px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;transition:border-color 0.15s ease,box-shadow 0.15s ease;';
     const _containerBase = 'display:flex;align-items:center;';
 
     const SETTINGS_STYLES = {
@@ -4931,10 +5070,10 @@
         labelWithMinWidth: _labelBase + 'min-width:220px;flex-shrink:0;user-select:none;',
         labelWithMinWidthSmall: _labelBase + 'min-width:82px;flex-shrink:0;',
         // Input样式
-        inputBase: 'padding:8px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;transition:all 0.2s ease;',
-        inputSmall: 'width:60px;padding:8px 4px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;text-align:center;transition:all 0.2s ease;',
-        inputMedium: 'width:85px;padding:8px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;transition:all 0.2s ease;',
-        inputTextarea: 'width:100%;min-height:60px;padding:8px;border:2px solid #667eea;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;transition:all 0.2s ease;',
+        inputBase: 'padding:8px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;transition:border-color 0.15s ease,box-shadow 0.15s ease;',
+        inputSmall: 'width:60px;padding:8px 4px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;text-align:center;transition:border-color 0.15s ease,box-shadow 0.15s ease;',
+        inputMedium: 'width:85px;padding:8px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;transition:border-color 0.15s ease,box-shadow 0.15s ease;',
+        inputTextarea: 'width:100%;min-height:60px;padding:8px;border:2px solid #667eea;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;transition:border-color 0.15s ease,box-shadow 0.15s ease;',
         // Container样式
         itemContainer: _containerBase + 'padding:12px 0;border-bottom:1px solid #f0f0f0',
         itemContainerWithGap: _containerBase + 'padding:10px 0;border-bottom:1px solid #f0f0f0',
@@ -4945,7 +5084,7 @@
         // 其他样式
         checkboxSmall: 'margin-right:10px;width:18px;height:18px;cursor:pointer;',
         checkboxHidden: 'opacity:0;width:0;height:0;position:absolute;',
-        closeBtn: 'cursor:pointer;font-size:22px;font-weight:bold;color:#718096;padding:8px;position:absolute;top:18px;right:18px;transition:all 0.2s ease;',
+        closeBtn: 'cursor:pointer;font-size:22px;font-weight:bold;color:#718096;padding:8px;position:absolute;top:18px;right:18px;transition:color 0.15s ease,opacity 0.15s ease;',
         saveBtn: 'padding:6px 12px;background:linear-gradient(135deg, #48bb78 0%, #38a169 100%);color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;flex-shrink:0;box-shadow:0 2px 8px rgba(72, 187, 120, 0.3);'
     };
 
@@ -4975,7 +5114,7 @@
      * 创建主按钮（渐变紫色）
      */
     function createPrimaryButton(text, onClick) {
-        const btn = createTag('button', text, 'padding:12px 20px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;box-shadow:0 4px 12px rgba(102, 126, 234, 0.3);transition:all 0.2s ease;');
+        const btn = createTag('button', text, 'padding:12px 20px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;box-shadow:0 4px 12px rgba(102, 126, 234, 0.3);transition:transform 0.15s ease,box-shadow 0.15s ease;');
         btn.onclick = onClick;
         btn.addEventListener('mouseenter', () => {
             btn.style.transform = 'translateY(-2px)';
@@ -5498,7 +5637,7 @@
 
     const BOOKMARK_SIGNAL_KEY = "bookmarkSignal"; // 书签创建信号key
     const BOOKMARK_JUMP_SIGNAL_KEY = "bookmarkJumpSignal"; // 书签跳转信号key
-    
+
     // 当前选中的书签key（用于切换分组）- 模块级变量
     let selectedBookmarkKey = null;
     const NEW_CHAT_JUMP_SIGNAL_KEY = "newChatJumpSignal"; // 新对话跳转信号key
@@ -6112,14 +6251,14 @@
     // 将二级分组移动到指定的一级分组
     function moveSecondLevelGroupToTopLevel(secondLevelId, targetTopLevelId) {
         const topLevelGroupMap = getTopLevelGroupMap();
-        
+
         // 从所有一级分组中移除该二级分组
         Object.keys(topLevelGroupMap).forEach(topLevelId => {
             if (topLevelGroupMap[topLevelId]) {
                 topLevelGroupMap[topLevelId] = topLevelGroupMap[topLevelId].filter(id => id !== secondLevelId);
             }
         });
-        
+
         // 添加到目标一级分组
         if (!topLevelGroupMap[targetTopLevelId]) {
             topLevelGroupMap[targetTopLevelId] = [];
@@ -6127,21 +6266,21 @@
         if (!topLevelGroupMap[targetTopLevelId].includes(secondLevelId)) {
             topLevelGroupMap[targetTopLevelId].push(secondLevelId);
         }
-        
+
         setTopLevelGroupMap(topLevelGroupMap);
     }
 
     // 从一级分组中移除二级分组（变为未归类）
     function removeSecondLevelGroupFromTopLevel(secondLevelId) {
         const topLevelGroupMap = getTopLevelGroupMap();
-        
+
         // 从所有一级分组中移除该二级分组
         Object.keys(topLevelGroupMap).forEach(topLevelId => {
             if (topLevelGroupMap[topLevelId]) {
                 topLevelGroupMap[topLevelId] = topLevelGroupMap[topLevelId].filter(id => id !== secondLevelId);
             }
         });
-        
+
         setTopLevelGroupMap(topLevelGroupMap);
     }
 
@@ -7032,11 +7171,11 @@
             const groupSelect = createTag('div', bookmarkGroupName, `${GROUP_SELECT_BASE_STYLE};background:${groupBgColor};cursor:pointer;color:#333;text-align:center`);
             groupSelect.setAttribute('data-bookmark-key', bookmarkKey);
             groupSelect.title = '点击选中此行，然后点击表格上方的分组按钮来更换此条书签的分组；再次点击可取消选中';
-            
+
             // 点击分组列时选中/取消选中该行
             groupSelect.addEventListener('click', () => {
                 const isCurrentlySelected = selectedBookmarkKey === bookmarkKey;
-                
+
                 if (isCurrentlySelected) {
                     // 当前行已选中，取消选中
                     tr.style.backgroundColor = '';
@@ -7052,7 +7191,7 @@
                     selectedBookmarkKey = bookmarkKey;
                 }
             });
-            
+
             tr.setAttribute('data-bookmark-key', bookmarkKey);
             tdGroup.appendChild(groupSelect);
             tr.appendChild(tdGroup);
@@ -7129,7 +7268,7 @@
             tbody.appendChild(tr);
         });
         table.appendChild(tbody);
-        
+
         // 创建可滚动的表格容器
         const tableContainer = createTag('div', "", 'flex:1;overflow-y:auto;overflow-x:auto;min-height:0');
         tableContainer.appendChild(table);
@@ -7144,7 +7283,7 @@
     function showBookmarkWindow(selectedGroupId = null, skipSaveGroup = false) {
         // 重置选中的书签（每次打开弹窗时）
         selectedBookmarkKey = null;
-        
+
         // CSS样式变量（属性超过2个的样式）
         const POPUP_SIZE_STYLE = 'width:65%;height:90%;overflow:hidden;display:flex;flex-direction:column';
         const HEADER_STYLE = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;padding-bottom:10px;border-bottom:1px solid #eee;flex-shrink:0;background:white;z-index:10';
@@ -7153,7 +7292,7 @@
         const TAB_CONTAINER_STYLE = 'display:flex;align-items:flex-start;gap:8px;margin-bottom:15px;padding-bottom:10px;border-bottom:1px solid #eee;flex-wrap:wrap;flex-shrink:0;background:white;z-index:10;position:sticky;top:0';
         const ADD_GROUP_BTN_STYLE = 'padding:6px 12px;background:#4caf50;color:white;border:none;border-radius:4px;cursor:pointer;font-size:13px';
         const ADD_TAG_BTN_STYLE = 'padding:6px 12px;background:#2196f3;color:white;border:none;border-radius:4px;cursor:pointer;font-size:13px';
-        
+
         // 一级分组容器样式
         const TOP_LEVEL_CONTAINER_STYLE = 'display:inline-block;margin-bottom:15px;margin-right:15px;padding:3px 8px;border:1px solid #ddd;border-radius:4px;width:fit-content;vertical-align:top';
         // 一级分组标题样式
@@ -7232,17 +7371,17 @@
             const border = isSelected ? '2px solid #667eea' : '1px solid transparent';
             const displayStyle = isSecondLevel ? 'display:inline-block;' : '';
             const tab = createTag('div', text, `${TAB_BASE_STYLE};${displayStyle}${fontWeight}background:${bgColor};border:${border}`);
-            
+
             if (isSecondLevel && groupId !== null) {
                 // 二级分组按钮：点击时如果有选中的书签，则切换分组；否则切换视图
                 tab.setAttribute('data-group-id', groupId);
                 // 默认cursor为pointer，只有按住时才可拖拽
                 tab.style.cursor = 'pointer';
                 tab.draggable = false;
-                
+
                 let isDragging = false;
                 let isMouseDown = false;
-                
+
                 // 鼠标按下时启用拖拽
                 tab.addEventListener('mousedown', (e) => {
                     isMouseDown = true;
@@ -7254,28 +7393,28 @@
                         }
                     }, 100);
                 });
-                
+
                 // 鼠标释放时禁用拖拽
                 tab.addEventListener('mouseup', (e) => {
                     isMouseDown = false;
                     tab.draggable = false;
                     tab.style.cursor = 'pointer';
                 });
-                
+
                 // 鼠标离开时也禁用拖拽
                 tab.addEventListener('mouseleave', (e) => {
                     isMouseDown = false;
                     tab.draggable = false;
                     tab.style.cursor = 'pointer';
                 });
-                
+
                 tab.addEventListener('dragstart', (e) => {
                     isDragging = true;
                     e.dataTransfer.setData('text/plain', groupId.toString());
                     e.dataTransfer.effectAllowed = 'move';
                     tab.style.opacity = '0.5';
                 });
-                
+
                 tab.addEventListener('dragend', (e) => {
                     tab.style.opacity = '1';
                     tab.draggable = false;
@@ -7286,14 +7425,14 @@
                         isDragging = false;
                     }, 100);
                 });
-                
+
                 // 双击编辑分组名称
                 let lastClickTime = 0;
                 tab.addEventListener('dblclick', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     if (isDragging) return;
-                    
+
                     const currentName = text;
                     const newName = prompt('请输入新的分组名称：', currentName);
                     if (newName && newName.trim() && newName.trim() !== currentName) {
@@ -7304,7 +7443,7 @@
                         }
                     }
                 });
-                
+
                 tab.addEventListener('click', (e) => {
                     // 如果刚刚拖拽过，不触发点击事件
                     if (isDragging) {
@@ -7312,7 +7451,7 @@
                         e.stopPropagation();
                         return;
                     }
-                    
+
                     // 处理双击：如果两次点击间隔很短，可能是双击，延迟处理单击
                     const now = Date.now();
                     if (now - lastClickTime < 300) {
@@ -7321,7 +7460,7 @@
                         return;
                     }
                     lastClickTime = now;
-                    
+
                     // 延迟处理单击，避免与双击冲突
                     setTimeout(() => {
                         if (lastClickTime === now) {
@@ -7355,11 +7494,11 @@
 
         // 全部和默认按钮容器（垂直排列）
         const allAndDefaultContainer = createTag('div', "", 'display:flex;flex-direction:column;gap:8px;align-items:flex-start');
-        
+
         // 全部Tab
         const allTab = createGroupTab('全部', null, currentGroupId === null, '#f0f0f0', true);
         allAndDefaultContainer.appendChild(allTab);
-        
+
         // 默认分组按钮（显示在"全部"按钮下方）
         const defaultGroup = groups.find(g => g.id === DEFAULT_GROUP_ID);
         if (defaultGroup) {
@@ -7367,7 +7506,7 @@
             const defaultTab = createGroupTab(defaultGroup.name, DEFAULT_GROUP_ID, currentGroupId === DEFAULT_GROUP_ID, defaultGroupBgColor);
             allAndDefaultContainer.appendChild(defaultTab);
         }
-        
+
         tabContainer.appendChild(allAndDefaultContainer);
 
         // 获取一级分组数据
@@ -7398,15 +7537,15 @@
                 container.style.borderColor = '#667eea';
                 container.style.backgroundColor = '#f0f4ff';
             });
-            
+
             container.addEventListener('dragleave', (e) => {
                 container.style.borderColor = '#ddd';
             });
-            
+
             container.addEventListener('drop', (e) => {
                 e.preventDefault();
                 container.style.borderColor = '#ddd';
-                
+
                 const secondLevelId = parseInt(e.dataTransfer.getData('text/plain'));
                 if (!isNaN(secondLevelId)) {
                     onDropCallback(secondLevelId);
@@ -7418,7 +7557,7 @@
         // 创建按钮容器（包含两行按钮）的公共函数
         const createButtonContainer = (secondLevelGroups, containerStyle = SECOND_LEVEL_CONTAINER_DEFAULT_STYLE) => {
             const container = createTag('div', "", containerStyle);
-            
+
             // 将二级分组分成两行
             const row1Groups = secondLevelGroups.slice(0, Math.ceil(secondLevelGroups.length / 2));
             const row2Groups = secondLevelGroups.slice(Math.ceil(secondLevelGroups.length / 2));
@@ -7426,10 +7565,10 @@
             // 创建并添加两行按钮
             const row1 = createButtonRow(row1Groups, true);
             if (row1) container.appendChild(row1);
-            
+
             const row2 = createButtonRow(row2Groups, false);
             if (row2) container.appendChild(row2);
-            
+
             return container;
         };
 
@@ -7441,12 +7580,12 @@
             // 创建一级分组容器（宽度自适应内容）
             const topLevelContainer = createTag('div', "", TOP_LEVEL_CONTAINER_STYLE);
             topLevelContainer.setAttribute('data-top-level-id', topLevelId);
-            
+
             // 添加拖拽放置功能
             addDragDropHandlers(topLevelContainer, topLevelId, (secondLevelId) => {
                 moveSecondLevelGroupToTopLevel(secondLevelId, topLevelId);
             });
-            
+
             // 一级分组标题div（支持双击编辑）
             const topLevelHeader = createTag('div', topLevelName, TOP_LEVEL_HEADER_STYLE);
             topLevelHeader.style.cursor = 'pointer';
@@ -7483,19 +7622,19 @@
             ids.forEach(id => allSecondLevelIds.add(id));
         });
         const ungroupedSecondLevelGroups = groups.filter(g => !allSecondLevelIds.has(g.id) && g.id !== DEFAULT_GROUP_ID);
-        
+
         if (ungroupedSecondLevelGroups.length > 0) {
             const ungroupedContainer = createTag('div', "", TOP_LEVEL_CONTAINER_STYLE);
             ungroupedContainer.setAttribute('data-top-level-id', 'ungrouped');
-            
+
             // 添加拖拽放置功能（未归类分组）
             addDragDropHandlers(ungroupedContainer, 'ungrouped', (secondLevelId) => {
                 removeSecondLevelGroupFromTopLevel(secondLevelId);
             });
-            
+
             const ungroupedHeader = createTag('div', '未归类', TOP_LEVEL_HEADER_STYLE);
             ungroupedContainer.appendChild(ungroupedHeader);
-            
+
             // 创建按钮容器
             const ungroupedButtonsContainer = createButtonContainer(ungroupedSecondLevelGroups, SECOND_LEVEL_CONTAINER_DEFAULT_STYLE);
             ungroupedContainer.appendChild(ungroupedButtonsContainer);
@@ -7504,7 +7643,7 @@
 
         // 创建按钮容器（上下排列）
         const buttonContainer = createTag('div', "", 'display:flex;flex-direction:column;gap:8px;align-items:flex-start');
-        
+
         // 添加标签按钮（添加一级分组）
         const addTagBtn = createTag('button', '+ 添加标签', ADD_TAG_BTN_STYLE);
         addTagBtn.title = '添加新标签（一级分组）';
@@ -7538,7 +7677,7 @@
         addGroupBtn.addEventListener('mouseenter', () => addGroupBtn.style.opacity = '0.85');
         addGroupBtn.addEventListener('mouseleave', () => addGroupBtn.style.opacity = '1');
         buttonContainer.appendChild(addGroupBtn);
-        
+
         tabContainer.appendChild(buttonContainer);
 
         content.appendChild(tabContainer);
